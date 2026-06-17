@@ -19,7 +19,7 @@
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:18px" type="submit">Valider</button>
     </form>
-    <p class="code-note">Pas recu ? <a class="auth-link" href="#">Renvoyer le code</a></p>
+    <p class="code-note">Pas recu ? <a class="auth-link" href="{{ path('app_resend_verification_email') }}">Renvoyer le code</a></p>
   </div>
 </div>
 <script>

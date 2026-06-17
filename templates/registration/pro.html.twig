@@ -18,13 +18,17 @@
           'id': 'profSelect',
           'attr': {'onchange': 'adaptReg(this.value)'}
         }) }}
-        {{ form_errors(form.profession) }}
+        <div class="invalid-feedback d-block small mt-1">
+          {{ form_errors(form.profession, {'attr': {'class': 'list-unstyled'}}) }}
+        </div>
       </div>
 
       <div class="field">
         {{ form_label(form.raisonSociale, 'Raison sociale *') }}
         {{ form_widget(form.raisonSociale, {'attr': {'placeholder': 'Cabinet Durand & Associes'}}) }}
-        {{ form_errors(form.raisonSociale) }}
+        <div class="invalid-feedback d-block small mt-1">
+          {{ form_errors(form.raisonSociale) }}
+        </div>
       </div>
 
       <div class="field-row">
@@ -34,20 +38,26 @@
             'id': 'regInput',
             'attr': {'placeholder': '07 0XX XXX'}
           }) }}
-          {{ form_errors(form.registryNumber) }}
+          <div class="invalid-feedback d-block small mt-1">
+            {{ form_errors(form.registryNumber) }}
+          </div>
         </div>
 
         <div class="field">
           {{ form_label(form.siret, 'SIRET') }}
           {{ form_widget(form.siret, {'attr': {'placeholder': '123 456 789 00012'}}) }}
-          {{ form_errors(form.siret) }}
+          <div class="invalid-feedback d-block small mt-1">
+            {{ form_errors(form.siret) }}
+          </div>
         </div>
       </div>
 
       <div class="field">
         {{ form_label(form.email, 'Email professionnel *') }}
         {{ form_widget(form.email, {'attr': {'placeholder': 'contact@cabinet.fr'}}) }}
-        {{ form_errors(form.email) }}
+        <div class="invalid-feedback d-block small mt-1">
+          {{ form_errors(form.email) }}
+        </div>
       </div>
 
       <div class="field">
@@ -55,7 +65,9 @@
           Mot de passe * <small style="font-weight:400;color:var(--ink-soft)">(8 car. min.)</small>
         </label>
         {{ form_widget(form.plainPassword, {'attr': {'placeholder': '...', 'minlength': '8'}}) }}
-        {{ form_errors(form.plainPassword) }}
+        <div class="invalid-feedback d-block small mt-1">
+          {{ form_errors(form.plainPassword) }}
+        </div>
       </div>
 
       {% for type, messages in app.flashes %}

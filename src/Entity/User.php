@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Entity;
 
+use App\Enum\Occupation;
+use App\Enum\Profile;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -19,7 +22,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'guid')]
     private string $id;
 
-    #[ORM\Column(length: 255, unique: true)]
+    #[ORM\Column(length: 180, unique: true)]
     private string $email;
 
     #[ORM\Column]
@@ -28,13 +31,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
 
-    /** particulier | pro */
-    #[ORM\Column(length: 20)]
-    private string $profile = 'particulier';
+    #[ORM\Column(enumType: Profile::class)]
+    private ?Profile $profile = Profile::PARTICULAR;
 
-    /** courtier | avocat | syndic | adb | expert | autre */
-    #[ORM\Column(length: 50, nullable: true)]
-    private ?string $profession = null;
+    #[ORM\Column(enumType: Occupation::class)]
+    private ?Occupation $profession = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $raisonSociale = null;
@@ -68,48 +69,211 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->id        = Uuid::v4()->toRfc4122();
+        $this->id = Uuid::v4()->toRfc4122();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function onPreUpdate(): void { $this->updatedAt = new \DateTimeImmutable(); }
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
-    public function getId(): string { return $this->id; }
-    public function getEmail(): string { return $this->email; }
-    public function setEmail(string $email): static { $this->email = $email; return $this; }
-    public function getUserIdentifier(): string { return $this->email; }
-    public function getRoles(): array { $r = $this->roles; $r[] = 'ROLE_USER'; return array_unique($r); }
-    public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
-    public function getPassword(): string { return $this->password; }
-    public function setPassword(string $p): static { $this->password = $p; return $this; }
-    public function eraseCredentials(): void {}
-    public function getProfile(): string { return $this->profile; }
-    public function setProfile(string $p): static { $this->profile = $p; return $this; }
-    public function getProfession(): ?string { return $this->profession; }
-    public function setProfession(?string $p): static { $this->profession = $p; return $this; }
-    public function getRaisonSociale(): ?string { return $this->raisonSociale; }
-    public function setRaisonSociale(?string $r): static { $this->raisonSociale = $r; return $this; }
-    public function getRegistryType(): ?string { return $this->registryType; }
-    public function setRegistryType(?string $t): static { $this->registryType = $t; return $this; }
-    public function getRegistryNumber(): ?string { return $this->registryNumber; }
-    public function setRegistryNumber(?string $n): static { $this->registryNumber = $n; return $this; }
-    public function getSiret(): ?string { return $this->siret; }
-    public function setSiret(?string $s): static { $this->siret = $s; return $this; }
-    public function isEmailVerified(): bool { return $this->emailVerifiedAt !== null; }
-    public function getEmailVerifiedAt(): ?\DateTimeImmutable { return $this->emailVerifiedAt; }
-    public function setEmailVerifiedAt(?\DateTimeImmutable $d): static { $this->emailVerifiedAt = $d; return $this; }
-    public function getVerificationCode(): ?string { return $this->verificationCode; }
-    public function setVerificationCode(?string $c): static { $this->verificationCode = $c; return $this; }
-    public function getVerificationCodeExpiresAt(): ?\DateTimeImmutable { return $this->verificationCodeExpiresAt; }
-    public function setVerificationCodeExpiresAt(?\DateTimeImmutable $d): static { $this->verificationCodeExpiresAt = $d; return $this; }
-    public function getCredits(): int { return $this->credits; }
-    public function setCredits(int $c): static { $this->credits = $c; return $this; }
-    public function addCredits(int $amount): static { $this->credits += $amount; return $this; }
-    public function deductCredit(): bool { if ($this->credits < 1) return false; $this->credits--; return true; }
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
-    public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }
-    public function isPro(): bool { return $this->profile === 'pro'; }
-    public function isCourtier(): bool { return $this->isPro() && $this->profession === 'courtier'; }
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        $r = $this->roles;
+        $r[] = 'ROLE_USER';
+        return array_unique($r);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $p): static
+    {
+        $this->password = $p;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+    }
+
+    public function getProfile(): ?Profile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?Profile $profile): static
+    {
+        $this->profile = $profile;
+        return $this;
+    }
+
+    public function getProfession(): ?Occupation
+    {
+        return $this->profession;
+    }
+
+    public function setProfession(?Occupation $profession): static
+    {
+        $this->profession = $profession;
+        return $this;
+    }
+
+    public function getRaisonSociale(): ?string
+    {
+        return $this->raisonSociale;
+    }
+
+    public function setRaisonSociale(?string $r): static
+    {
+        $this->raisonSociale = $r;
+        return $this;
+    }
+
+    public function getRegistryType(): ?string
+    {
+        return $this->registryType;
+    }
+
+    public function setRegistryType(?string $t): static
+    {
+        $this->registryType = $t;
+        return $this;
+    }
+
+    public function getRegistryNumber(): ?string
+    {
+        return $this->registryNumber;
+    }
+
+    public function setRegistryNumber(?string $n): static
+    {
+        $this->registryNumber = $n;
+        return $this;
+    }
+
+    public function getSiret(): ?string
+    {
+        return $this->siret;
+    }
+
+    public function setSiret(?string $s): static
+    {
+        $this->siret = $s;
+        return $this;
+    }
+
+    public function isEmailVerified(): bool
+    {
+        return $this->emailVerifiedAt !== null;
+    }
+
+    public function getEmailVerifiedAt(): ?\DateTimeImmutable
+    {
+        return $this->emailVerifiedAt;
+    }
+
+    public function setEmailVerifiedAt(?\DateTimeImmutable $d): static
+    {
+        $this->emailVerifiedAt = $d;
+        return $this;
+    }
+
+    public function getVerificationCode(): ?string
+    {
+        return $this->verificationCode;
+    }
+
+    public function setVerificationCode(?string $c): static
+    {
+        $this->verificationCode = $c;
+        return $this;
+    }
+
+    public function getVerificationCodeExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->verificationCodeExpiresAt;
+    }
+
+    public function setVerificationCodeExpiresAt(?\DateTimeImmutable $d): static
+    {
+        $this->verificationCodeExpiresAt = $d;
+        return $this;
+    }
+
+    public function getCredits(): int
+    {
+        return $this->credits;
+    }
+
+    public function setCredits(int $c): static
+    {
+        $this->credits = $c;
+        return $this;
+    }
+
+    public function addCredits(int $amount): static
+    {
+        $this->credits += $amount;
+        return $this;
+    }
+
+    public function deductCredit(): bool
+    {
+        if ($this->credits < 1) return false;
+        $this->credits--;
+        return true;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): \DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function isPro(): bool
+    {
+        return $this->profile === 'pro';
+    }
+
+    public function isCourtier(): bool
+    {
+        return $this->isPro() && $this->profession === 'courtier';
+    }
 }

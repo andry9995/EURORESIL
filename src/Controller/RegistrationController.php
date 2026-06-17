@@ -1,13 +1,19 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Enum\Profile;
 use App\Form\RegistrationParticulierType;
 use App\Form\RegistrationProType;
+use App\Service\RegistrationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -16,27 +22,38 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/auth')]
 class RegistrationController extends AbstractController
 {
+    public function __construct(
+        private readonly RegistrationService $registrationService
+    )
+    {
+    }
+
     #[Route('/register', name: 'app_register_choice')]
     public function choice(): Response
     {
         return $this->render('registration/choice.html.twig');
     }
 
+    /**
+     * @param Request $request
+     * @param UserPasswordHasherInterface $hasher
+     * @return Response
+     * @throws TransportExceptionInterface
+     */
     #[Route('/register/particulier', name: 'app_register_particulier')]
     public function registerParticulier(
-        Request $request,
+        Request                     $request,
         UserPasswordHasherInterface $hasher,
-        EntityManagerInterface $em,
-        MailerInterface $mailer,
-    ): Response {
+    ): Response
+    {
         $user = new User();
-        $user->setProfile('particulier');
+        $user->setProfile(Profile::PARTICULAR);
         $form = $this->createForm(RegistrationParticulierType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($hasher->hashPassword($user, $form->get('plainPassword')->getData()));
-            $this->sendVerificationCode($user, $em, $mailer);
+            $this->registrationService->sendVerificationCode($user);
             $request->getSession()->set('pending_user_id', $user->getId());
             return $this->redirectToRoute('app_verify_email');
         }
@@ -44,21 +61,23 @@ class RegistrationController extends AbstractController
         return $this->render('registration/particulier.html.twig', ['form' => $form]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route('/register/pro', name: 'app_register_pro')]
     public function registerPro(
-        Request $request,
+        Request                     $request,
         UserPasswordHasherInterface $hasher,
-        EntityManagerInterface $em,
-        MailerInterface $mailer,
-    ): Response {
+    ): Response
+    {
         $user = new User();
-        $user->setProfile('pro');
+        $user->setProfile(Profile::PRO);
         $form = $this->createForm(RegistrationProType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword($hasher->hashPassword($user, $form->get('plainPassword')->getData()));
-            $this->sendVerificationCode($user, $em, $mailer);
+            $this->registrationService->sendVerificationCode($user);
             $request->getSession()->set('pending_user_id', $user->getId());
             return $this->redirectToRoute('app_verify_email');
         }
@@ -66,7 +85,7 @@ class RegistrationController extends AbstractController
         return $this->render('registration/pro.html.twig', ['form' => $form]);
     }
 
-    #[Route('/verify-email', name: 'app_verify_email', methods: ['GET','POST'])]
+    #[Route('/verify-email', name: 'app_verify_email', methods: ['GET', 'POST'])]
     public function verifyEmail(Request $request, EntityManagerInterface $em): Response
     {
         $userId = $request->getSession()->get('pending_user_id');
@@ -95,14 +114,40 @@ class RegistrationController extends AbstractController
         return $this->render('registration/verify_email.html.twig');
     }
 
-    #[Route('/forgot-password', name: 'app_forgot_password', methods: ['GET','POST'])]
+    /**
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return Response
+     * @throws TransportExceptionInterface
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    #[Route('/resend-verification-email', name: 'app_resend_verification_email', methods: ['GET'])]
+    public function resendVerificationEmail(
+        Request                $request,
+        EntityManagerInterface $em
+    ): Response
+    {
+        $userId = $request->getSession()->get('pending_user_id');
+        if (!$userId) return $this->redirectToRoute('app_register_choice');
+
+        $user = $em->find(User::class, $userId);
+        if (!$user) return $this->redirectToRoute('app_register_choice');
+
+        $this->registrationService->sendVerificationCode($user);
+        $request->getSession()->set('pending_user_id', $user->getId());
+
+        return $this->redirectToRoute('app_verify_email');
+    }
+
+    #[Route('/forgot-password', name: 'app_forgot_password', methods: ['GET', 'POST'])]
     public function forgotPassword(Request $request, EntityManagerInterface $em, MailerInterface $mailer): Response
     {
         if ($request->isMethod('POST')) {
             $email = $request->request->get('email');
-            $user  = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+            $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
             if ($user) {
-                $this->sendVerificationCode($user, $em, $mailer);
+                $this->registrationService->sendVerificationCode($user);
                 $request->getSession()->set('reset_user_id', $user->getId());
             }
             // Toujours rediriger (ne pas divulguer si l'email existe)
@@ -111,19 +156,20 @@ class RegistrationController extends AbstractController
         return $this->render('registration/forgot_password.html.twig');
     }
 
-    #[Route('/reset-password', name: 'app_reset_password', methods: ['GET','POST'])]
+    #[Route('/reset-password', name: 'app_reset_password', methods: ['GET', 'POST'])]
     public function resetPassword(
-        Request $request,
-        EntityManagerInterface $em,
+        Request                     $request,
+        EntityManagerInterface      $em,
         UserPasswordHasherInterface $hasher,
-    ): Response {
+    ): Response
+    {
         $userId = $request->getSession()->get('reset_user_id');
         if (!$userId) return $this->redirectToRoute('app_forgot_password');
 
         $user = $em->find(User::class, $userId);
 
         if ($request->isMethod('POST')) {
-            $code     = $request->request->get('code');
+            $code = $request->request->get('code');
             $password = $request->request->get('password');
 
             if ($user && $user->getVerificationCode() === $code && $user->getVerificationCodeExpiresAt() > new \DateTimeImmutable()) {
@@ -138,22 +184,5 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('registration/reset_password.html.twig');
-    }
-
-    private function sendVerificationCode(User $user, EntityManagerInterface $em, MailerInterface $mailer): void
-    {
-        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $user->setVerificationCode($code);
-        $user->setVerificationCodeExpiresAt(new \DateTimeImmutable('+15 minutes'));
-        $em->persist($user);
-        $em->flush();
-
-        $email = (new Email())
-            ->from('noreply@euroresil.fr')
-            ->to($user->getEmail())
-            ->subject('EURORESIL — Votre code de verification')
-            ->html($this->renderView('emails/verification_code.html.twig', ['code' => $code, 'user' => $user]));
-
-        $mailer->send($email);
     }
 }
