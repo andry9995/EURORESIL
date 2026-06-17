@@ -269,11 +269,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function isPro(): bool
     {
-        return $this->profile === 'pro';
+        return $this->profile === Profile::PRO;
     }
 
     public function isCourtier(): bool
     {
-        return $this->isPro() && $this->profession === 'courtier';
+        return $this->isPro() && $this->profession === Occupation::BROKER;
     }
 }

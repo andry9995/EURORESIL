@@ -74,7 +74,7 @@
         </a>
         <div style="display:flex;align-items:center;gap:8px">
             <div class="mode-toggle">
-                {% if app.user.profile == 'pro' %}
+                {% if app.user.profile == constant('App\\Enum\\Profile::PRO') %}
                     <a href="{{ path('app_dashboard') }}"
                        class="btn-nav {% if app.request.pathinfo starts with '/dashboard' %}on{% endif %}">Tableau de
                         bord</a>

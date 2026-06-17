@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -30,12 +31,16 @@ class SecurityController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
+        /**
+         * @var User $user
+         */
         $user = $this->getUser();
         if (!$user) return $this->redirectToRoute('app_login');
 
         if ($user->isPro()) {
             return $this->redirectToRoute('app_dashboard');
         }
+
         return $this->redirectToRoute('app_wizard_souscripteur');
     }
 }
