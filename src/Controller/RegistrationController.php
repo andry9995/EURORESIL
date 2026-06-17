@@ -106,7 +106,7 @@ class RegistrationController extends AbstractController
                 $user->setVerificationCode(null);
                 $em->flush();
                 $request->getSession()->remove('pending_user_id');
-                $this->addFlash('success', 'Compte verifie ! Vous pouvez vous connecter.');
+                $this->addFlash('success', 'Compte vérifié ! Vous pouvez vous connecter.');
                 return $this->redirectToRoute('app_login');
             }
         }

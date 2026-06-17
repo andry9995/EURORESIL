@@ -1,33 +1,42 @@
 {% extends 'base_public.html.twig' %}
 {% block title %}Verifiez votre email — EURORESIL{% endblock %}
 {% block body %}
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
-  <div class="auth-card" style="width:100%;max-width:420px">
-    <h3>Verifiez votre email</h3>
-    <p class="desc">Nous avons envoye un code a 6 chiffres a votre adresse.</p>
-    {% for type, messages in app.flashes %}{% for msg in messages %}<div class="flash flash-{{ type }}">{{ msg }}</div>{% endfor %}{% endfor %}
-    <form method="post" id="codeForm">
-      <input type="hidden" name="_csrf_token" value="{{ csrf_token('verify_email') }}">
-      <input type="hidden" name="code" id="codeHidden">
-      <div class="code-row">
-        <input class="code-input" maxlength="1" inputmode="numeric">
-        <input class="code-input" maxlength="1" inputmode="numeric">
-        <input class="code-input" maxlength="1" inputmode="numeric">
-        <input class="code-input" maxlength="1" inputmode="numeric">
-        <input class="code-input" maxlength="1" inputmode="numeric">
-        <input class="code-input" maxlength="1" inputmode="numeric">
-      </div>
-      <button class="btn btn-primary btn-block" style="margin-top:18px" type="submit">Valider</button>
-    </form>
-    <p class="code-note">Pas recu ? <a class="auth-link" href="{{ path('app_resend_verification_email') }}">Renvoyer le code</a></p>
-  </div>
-</div>
-<script>
-document.querySelectorAll('.code-input').forEach((el,i,arr)=>{
-  el.addEventListener('input',()=>{if(el.value&&arr[i+1])arr[i+1].focus();});
-});
-document.getElementById('codeForm').addEventListener('submit',function(){
-  document.getElementById('codeHidden').value=[...document.querySelectorAll('.code-input')].map(e=>e.value).join('');
-});
-</script>
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+        <div class="auth-card" style="width:100%;max-width:420px">
+            <h3>Verifiez votre email</h3>
+            <p class="desc">Nous avons envoye un code a 6 chiffres a votre adresse.</p>
+            {% for type, messages in app.flashes %}
+                {% for msg in messages %}
+                    <div class="flash flash-{{ type }}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            <form method="post" id="codeForm">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('verify_email') }}">
+                <input type="hidden" name="code" id="codeHidden">
+                <div class="code-row">
+                    <input class="code-input" maxlength="1" inputmode="numeric">
+                    <input class="code-input" maxlength="1" inputmode="numeric">
+                    <input class="code-input" maxlength="1" inputmode="numeric">
+                    <input class="code-input" maxlength="1" inputmode="numeric">
+                    <input class="code-input" maxlength="1" inputmode="numeric">
+                    <input class="code-input" maxlength="1" inputmode="numeric">
+                </div>
+                <button class="btn btn-primary btn-block" style="margin-top:18px" type="submit">Valider</button>
+            </form>
+            <p class="code-note">Pas recu ? <a class="auth-link" href="{{ path('app_resend_verification_email') }}">Renvoyer
+                    le code</a></p>
+        </div>
+    </div>
+    <script>
+        document.querySelectorAll('.code-input').forEach((el, i, arr) => {
+            el.addEventListener('input', () => {
+                if (el.value && arr[i + 1]) arr[i + 1].focus();
+            });
+        });
+        document.getElementById('codeForm').addEventListener('submit', function () {
+            document.getElementById('codeHidden').value = [...document.querySelectorAll('.code-input')].map(e => e.value).join('');
+        });
+    </script>
 {% endblock %}
