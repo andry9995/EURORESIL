@@ -1,0 +1,29 @@
+{% extends 'base_public.html.twig' %}
+{% block title %}Compte particulier — EURORESIL{% endblock %}
+{% block body %}
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="auth-card" style="width:100%;max-width:440px">
+    <h3>Compte particulier</h3>
+    <p class="desc">Quelques informations et vous etes pret.</p>
+    <form method="post" action="{{ path('app_register_particulier') }}" novalidate>
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('register_particulier') }}">
+      <div class="field-row">
+        <div class="field"><label>Prenom *</label><input type="text" name="prenom" required placeholder="Camille" value="{{ app.request.request.get('prenom') }}"></div>
+        <div class="field"><label>Nom *</label><input type="text" name="nom" required placeholder="Durand" value="{{ app.request.request.get('nom') }}"></div>
+      </div>
+      <div class="field"><label>Email *</label><input type="email" name="email" required placeholder="vous@email.fr" value="{{ app.request.request.get('email') }}"></div>
+      <div class="field"><label>Mot de passe * <small style="font-weight:400;color:var(--ink-soft)">(8 caracteres min.)</small></label>
+        <input type="password" name="plainPassword" required placeholder="..." minlength="8"></div>
+      <div class="field" style="margin-bottom:20px">
+        <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;font-size:14px;font-weight:400">
+          <input type="checkbox" name="agreeTerms" required style="margin-top:3px;flex-shrink:0">
+          <span>J'accepte les <a href="#" style="color:var(--blue)">conditions d'utilisation</a> et la <a href="#" style="color:var(--blue)">politique de confidentialite</a></span>
+        </label>
+      </div>
+      {% for type, messages in app.flashes %}{% for msg in messages %}<div class="flash flash-{{ type }}">{{ msg }}</div>{% endfor %}{% endfor %}
+      <button class="btn btn-primary btn-block" type="submit">Creer mon compte</button>
+    </form>
+    <p class="auth-foot"><a class="auth-link" href="{{ path('app_register_choice') }}">Changer de profil</a></p>
+  </div>
+</div>
+{% endblock %}

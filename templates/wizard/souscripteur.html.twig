@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+{% block title %}Souscripteur — EURORESIL{% endblock %}
+{% block body %}
+<div class="wizard wrap">
+  <div class="stepper">
+    <div class="sg active"><div class="dot">1</div><div class="lbl">Souscripteur</div></div>
+    <div class="sg"><div class="dot">2</div><div class="lbl">Assureur</div></div>
+    <div class="sg"><div class="dot">3</div><div class="lbl">Contrat</div></div>
+    <div class="sg"><div class="dot">4</div><div class="lbl">Envoi</div></div>
+  </div>
+  <h2>Le souscripteur</h2>
+  <p class="sub">Les coordonnees de la personne dont on resilie le contrat.</p>
+
+  <form method="post" action="{{ path('app_wizard_souscripteur', {id: resiliation.id ?? ''}) }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('wizard_souscripteur') }}">
+    <div class="cat-radio">
+      <label class="cat" id="catPart">
+        <input type="radio" name="categorie" value="particulier"
+          {% if not resiliation.souscripteur or resiliation.souscripteur.categorie == 'particulier' %}checked{% endif %}
+          onchange="setCat('part')"> Particulier
+      </label>
+      <label class="cat" id="catPro">
+        <input type="radio" name="categorie" value="professionnel"
+          {% if resiliation.souscripteur and resiliation.souscripteur.categorie == 'professionnel' %}checked{% endif %}
+          onchange="setCat('pro')"> Professionnel
+      </label>
+    </div>
+    <div class="field-row" id="proFields" style="display:none">
+      <div class="field"><label>Societe et statut</label>
+        <input name="societe" placeholder="Raison sociale" value="{{ resiliation.souscripteur.societe ?? '' }}">
+      </div>
+      <div class="field"><label>N° SIRET / SIREN</label>
+        <input name="siret" placeholder="123 456 789 00012" value="{{ resiliation.souscripteur.siret ?? '' }}">
+      </div>
+    </div>
+    <div class="field"><label>Civilite</label>
+      <select name="civilite">
+        <option {% if resiliation.souscripteur and resiliation.souscripteur.civilite == 'Madame' %}selected{% endif %}>Madame</option>
+        <option {% if not resiliation.souscripteur or resiliation.souscripteur.civilite == 'Monsieur' %}selected{% endif %}>Monsieur</option>
+      </select>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Nom *</label>
+        <input name="nom" required placeholder="Durand" value="{{ resiliation.souscripteur.nom ?? '' }}">
+      </div>
+      <div class="field"><label>Nom de naissance</label>
+        <input name="nom_naissance" placeholder="(optionnel)" value="{{ resiliation.souscripteur.nom_naissance ?? '' }}">
+      </div>
+    </div>
+    <div class="field"><label>Prenom *</label>
+      <input name="prenom" required placeholder="Camille" value="{{ resiliation.souscripteur.prenom ?? '' }}">
+    </div>
+    <div class="field"><label>Adresse *</label>
+      <input name="adresse" required placeholder="12 rue des Lilas" value="{{ resiliation.souscripteur.adresse ?? '' }}">
+    </div>
+    <div class="field"><label>Complement d'adresse</label>
+      <input name="complement" placeholder="Batiment, etage..." value="{{ resiliation.souscripteur.complement ?? '' }}">
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Code postal *</label>
+        <input name="cp" required placeholder="26110" value="{{ resiliation.souscripteur.cp ?? '' }}">
+      </div>
+      <div class="field"><label>Ville *</label>
+        <input name="ville" required placeholder="Nyons" value="{{ resiliation.souscripteur.ville ?? '' }}">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Pays *</label>
+        <input name="pays" value="{{ resiliation.souscripteur.pays ?? 'France' }}">
+      </div>
+      <div class="field"><label>E-mail *</label>
+        <input type="email" name="email" required placeholder="contact@email.fr" value="{{ resiliation.souscripteur.email ?? '' }}">
+      </div>
+    </div>
+    {% if app.user.profile == 'pro' %}
+    <div class="field" style="margin-top:8px"><label>Votre reference pour ce client</label>
+      <input name="ref_client" placeholder="Reference interne" value="{{ resiliation.souscripteur.ref_client ?? '' }}">
+    </div>
+    {% endif %}
+    <div class="nav-btns">
+      <a class="btn btn-ghost" href="{{ path('app_home') }}">Retour</a>
+      <button class="btn btn-primary" type="submit">Continuer</button>
+    </div>
+  </form>
+</div>
+<script>
+function setCat(c){
+  document.getElementById('catPart').classList.toggle('on',c==='part');
+  document.getElementById('catPro').classList.toggle('on',c==='pro');
+  document.getElementById('proFields').style.display=c==='pro'?'grid':'none';
+}
+{% if resiliation.souscripteur and resiliation.souscripteur.categorie == 'professionnel' %}setCat('pro');{% else %}setCat('part');{% endif %}
+</script>
+{% endblock %}

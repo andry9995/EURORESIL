@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+{% block title %}Detail — EURORESIL{% endblock %}
+{% block body %}
+<div class="dash wrap" style="max-width:1100px">
+  <div style="margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <a href="{{ path('app_dashboard') }}" class="btn btn-ghost">Retour</a>
+    <div>
+      <h2>Resiliation de {{ resiliation.souscripteurNomComplet }}</h2>
+      <p style="font-size:13px;color:var(--ink-soft)">N° de pli : <strong>{{ resiliation.letrecoPliNumber ?? '(non attribue)' }}</strong></p>
+    </div>
+  </div>
+
+  {% if resiliation.status == 'received' %}
+    <div class="det-banner ok" style="margin-bottom:20px">Lettre receptionnee par {{ resiliation.assureurNom }} — Les preuves sont disponibles ci-dessous.</div>
+  {% elseif resiliation.status == 'sent' %}
+    <div class="det-banner sent" style="margin-bottom:20px">Lettre envoyee — en attente d'accuse de reception.</div>
+  {% elseif resiliation.status in ['sending','signing'] %}
+    <div class="det-banner wait" style="margin-bottom:20px">Envoi en cours vers {{ resiliation.assureurNom }}.</div>
+  {% elseif resiliation.status == 'draft' %}
+    <div class="det-banner wait" style="margin-bottom:20px">Brouillon — envoi non encore effectue. <a href="{{ path('app_wizard_souscripteur', {id: resiliation.id}) }}" class="auth-link">Continuer</a></div>
+  {% endif %}
+
+  <div class="recap-grid">
+    <div class="recap-col">
+      <div class="rsec">
+        <div class="rsec-head"><h4>Souscripteur</h4></div>
+        <div class="rrow"><span class="rl">Nom</span><span class="rv">{{ resiliation.souscripteurNomComplet }}</span></div>
+        <div class="rrow"><span class="rl">Adresse</span><span class="rv">{{ resiliation.souscripteur.adresse ?? '' }}</span></div>
+        <div class="rrow"><span class="rl">Email</span><span class="rv">{{ resiliation.souscripteur.email ?? '' }}</span></div>
+      </div>
+      <div class="rsec">
+        <div class="rsec-head"><h4>Le contrat</h4></div>
+        <div class="rrow"><span class="rl">Assureur</span><span class="rv">{{ resiliation.assureurNom }}</span></div>
+        <div class="rrow"><span class="rl">Type</span><span class="rv">{{ resiliation.typeContrat }}</span></div>
+        <div class="rrow"><span class="rl">Reference</span><span class="rv">{{ resiliation.contratRef }}</span></div>
+        <div class="rrow"><span class="rl">Motif</span><span class="rv">{{ resiliation.motif }}</span></div>
+      </div>
+      <div class="rsec">
+        <div class="rsec-head"><h4>Les avis ou accuses</h4></div>
+        {% if resiliation.preuves is empty %}
+          <p class="det-empty">Aucun avis pour le moment. Ils apparaitront apres l'envoi de la lettre recommandee.</p>
+        {% else %}
+          <table class="preuves-tbl">
+            <thead><tr><th>Date</th><th>Type</th><th>Preuve</th></tr></thead>
+            <tbody>
+              {% for preuve in resiliation.preuves %}
+              <tr>
+                <td>{{ preuve.eventDate|date('d/m/Y H:i') }}</td>
+                <td><span class="tag {{ preuve.type == 'reception' ? 'recu' : 'sent' }}"><i></i>{{ preuve.typeLabel }}</span></td>
+                <td>
+                  {% if preuve.proofPdfPath %}
+                    <a href="/proof/{{ preuve.id }}" class="btn-pdf" target="_blank">Voir</a>
+                  {% else %}
+                    <span style="font-size:12px;color:var(--ink-soft)">Traitement...</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+    </div>
+    <div class="letter-col">
+      <div class="letter-doc">
+        <div class="letter-top">
+          <span>Visualisation de la lettre</span>
+          <button class="btn-pdf" onclick="showToast('Telechargement...')">Telecharger</button>
+        </div>
+        <div class="letter-page">
+          <div class="letter-sender">{{ resiliation.souscripteurNomComplet }}</div>
+          <div class="letter-recipient"><strong>{{ resiliation.assureurNom }}</strong></div>
+          <div class="letter-date">Le {{ resiliation.createdAt|date('d/m/Y') }}</div>
+          <div class="letter-title">LETTRE RECOMMANDEE ELECTRONIQUE DE RESILIATION</div>
+          Madame, Monsieur,<br><br>
+          Par la presente lettre recommandee electronique, nous vous informons que nous sommes mandates par
+          <strong>{{ resiliation.souscripteurNomComplet }}</strong> afin de resilier le contrat suivant :<br><br>
+          <ul style="margin:0 0 12px 16px;padding:0">
+            <li>Reference : <span class="ph">{{ resiliation.contratRef }}</span></li>
+            <li>Type : <span class="ph">{{ resiliation.typeContrat }}</span></li>
+            <li>Motif : <span class="ph">{{ resiliation.motif }}</span></li>
+          </ul>
+          Nous vous prions d'agreer, Madame, Monsieur, l'expression de nos salutations distinguees.
+          <div style="text-align:center;font-style:italic;font-size:11px;color:var(--ink-soft);margin-top:20px;border-top:1px solid var(--line);padding-top:10px">
+            (Courrier signe numeriquement par envoi du courrier Letreco)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

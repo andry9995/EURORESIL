@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block title %}Nouveau recommande — EURORESIL{% endblock %}
+{% block body %}
+<div class="wizard wrap">
+  <h2>Envoyer un recommande electronique</h2>
+  <p class="sub">{{ use_case_label ?? 'Composez votre courrier recommande.' }}</p>
+  <form method="post" action="{{ path('app_lrar_send') }}" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('lrar_send') }}">
+    <input type="hidden" name="use_case" value="{{ use_case ?? 'libre' }}">
+    <div class="field"><label>Destinataire *</label><input name="destinataire" required placeholder="Nom de la personne ou de la societe"></div>
+    <div class="field"><label>Email du destinataire * <small style="font-weight:400;color:var(--ink-soft)">(LRE envoyee a cette adresse)</small></label>
+      <input type="email" name="email_dest" required placeholder="dest@exemple.fr"></div>
+    <div class="field"><label>Objet *</label><input name="objet" required value="{{ objet_default ?? '' }}" placeholder="Objet du courrier"></div>
+    <div class="field"><label>Corps du message *</label>
+      <textarea name="message" rows="8" required style="font-family:inherit;line-height:1.6" placeholder="Madame, Monsieur,&#10;...">{{ message_default ?? '' }}</textarea></div>
+    <div class="field"><label>Pieces jointes <small style="font-weight:400;color:var(--ink-soft)">(PDF, DOCX, JPG, PNG — max 25 Mo)</small></label>
+      <input type="file" name="attachments[]" multiple accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+    <div class="nav-btns">
+      <a class="btn btn-ghost" href="{{ path('app_dashboard') }}">Retour</a>
+      <button class="btn btn-primary" type="submit">Signer et envoyer en LRE</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

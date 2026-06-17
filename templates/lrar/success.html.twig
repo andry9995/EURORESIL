@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block title %}Envoye — EURORESIL{% endblock %}
+{% block body %}
+<div class="wizard wrap">
+  <div class="success">
+    <div class="check-big"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h2>Recommande envoye !</h2>
+    <p class="sub">Votre LRE qualifiee est en route. Les preuves arrivent automatiquement.</p>
+    <div class="nav-btns" style="justify-content:center">
+      <a class="btn btn-primary" href="{{ path('app_dashboard') }}">Tableau de bord</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

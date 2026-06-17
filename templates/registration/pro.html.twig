@@ -1,0 +1,44 @@
+{% extends 'base_public.html.twig' %}
+{% block title %}Compte professionnel — EURORESIL{% endblock %}
+{% block body %}
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="auth-card" style="width:100%;max-width:460px;max-height:94vh;overflow-y:auto">
+    <h3>Compte professionnel</h3>
+    <p class="desc">Ouvert a tous les professionnels qui envoient des recommandes.</p>
+    <form method="post" action="{{ path('app_register_pro') }}" novalidate>
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token('register_pro') }}">
+      <div class="field"><label>Profession *</label>
+        <select name="profession" id="profSelect" required onchange="adaptReg(this.value)">
+          <option value="">-- Choisissez votre metier --</option>
+          <option value="courtier" {% if app.request.request.get('profession')=='courtier' %}selected{% endif %}>Courtier / Agent d'assurance</option>
+          <option value="avocat" {% if app.request.request.get('profession')=='avocat' %}selected{% endif %}>Avocat</option>
+          <option value="syndic" {% if app.request.request.get('profession')=='syndic' %}selected{% endif %}>Syndic de copropriete</option>
+          <option value="adb" {% if app.request.request.get('profession')=='adb' %}selected{% endif %}>Administrateur de biens</option>
+          <option value="expert" {% if app.request.request.get('profession')=='expert' %}selected{% endif %}>Expert-comptable</option>
+          <option value="autre" {% if app.request.request.get('profession')=='autre' %}selected{% endif %}>Autre profession</option>
+        </select>
+      </div>
+      <div class="field"><label>Raison sociale *</label><input type="text" name="raisonSociale" required placeholder="Cabinet Durand & Associes" value="{{ app.request.request.get('raisonSociale') }}"></div>
+      <div class="field-row">
+        <div class="field"><label id="regLabel">N&#176; ORIAS *</label><input type="text" name="registryNumber" id="regInput" placeholder="07 0XX XXX" value="{{ app.request.request.get('registryNumber') }}"></div>
+        <div class="field"><label>SIRET</label><input type="text" name="siret" placeholder="123 456 789 00012" value="{{ app.request.request.get('siret') }}"></div>
+      </div>
+      <div class="field"><label>Email professionnel *</label><input type="email" name="email" required placeholder="contact@cabinet.fr" value="{{ app.request.request.get('email') }}"></div>
+      <div class="field"><label>Mot de passe * <small style="font-weight:400;color:var(--ink-soft)">(8 car. min.)</small></label>
+        <input type="password" name="plainPassword" required placeholder="..." minlength="8"></div>
+      {% for type, messages in app.flashes %}{% for msg in messages %}<div class="flash flash-{{ type }}">{{ msg }}</div>{% endfor %}{% endfor %}
+      <button class="btn btn-primary btn-block" type="submit">Creer mon compte</button>
+    </form>
+    <p class="auth-foot"><a class="auth-link" href="{{ path('app_register_choice') }}">Changer de profil</a></p>
+  </div>
+</div>
+<script>
+const regMap={courtier:['N&#176; ORIAS *','07 0XX XXX'],avocat:['Barreau de rattachement','Ex : Paris'],
+  syndic:['Carte professionnelle G (CCI)','N&#176; carte'],adb:['Carte professionnelle G (CCI)','N&#176; carte'],
+  expert:["N&#176; Ordre (OEC)",'N&#176; OEC'],autre:['Ref. professionnelle','(optionnel)']};
+function adaptReg(v){const m=regMap[v]||regMap.autre;
+  document.getElementById('regLabel').innerHTML=m[0];
+  document.getElementById('regInput').placeholder=m[1];}
+adaptReg(document.getElementById('profSelect').value);
+</script>
+{% endblock %}

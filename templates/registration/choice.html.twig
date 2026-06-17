@@ -1,0 +1,21 @@
+{% extends 'base_public.html.twig' %}
+{% block title %}Creer un compte — EURORESIL{% endblock %}
+{% block body %}
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
+  <div class="auth-card" style="width:100%;max-width:440px">
+    <h3>Creer un compte</h3>
+    <p class="desc">Choisissez votre profil.</p>
+    <div class="profile-pick">
+      <a class="pp" href="{{ path('app_register_particulier') }}" style="text-decoration:none;color:inherit">
+        <span class="ic" style="background:var(--amber-soft);font-size:22px">👤</span>
+        <div><h5>Particulier</h5><p>Je resilie mes propres contrats.</p></div>
+      </a>
+      <a class="pp" href="{{ path('app_register_pro') }}" style="text-decoration:none;color:inherit">
+        <span class="ic" style="background:var(--blue-soft);font-size:22px">🏢</span>
+        <div><h5>Professionnel</h5><p>Courtier, avocat, syndic, gestionnaire...</p></div>
+      </a>
+    </div>
+    <p class="auth-foot">Deja inscrit ? <a class="auth-link" href="{{ path('app_login') }}">Se connecter</a></p>
+  </div>
+</div>
+{% endblock %}

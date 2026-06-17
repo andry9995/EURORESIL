@@ -1,0 +1,82 @@
+{
+    "name": "euroresil/app",
+    "description": "EURORESIL — Plateforme de résiliation et LRE qualifiée",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "ext-json": "*",
+        "doctrine/doctrine-bundle": "^2.12",
+        "doctrine/doctrine-migrations-bundle": "^3.3",
+        "doctrine/orm": "^3.2",
+        "symfony/asset": "7.2.*",
+        "symfony/console": "7.2.*",
+        "symfony/doctrine-messenger": "7.2.*",
+        "symfony/dotenv": "7.2.*",
+        "symfony/flex": "^2",
+        "symfony/form": "7.2.*",
+        "symfony/framework-bundle": "7.2.*",
+        "symfony/mailer": "7.2.*",
+        "symfony/password-hasher": "7.2.*",
+        "symfony/runtime": "7.2.*",
+        "symfony/security-bundle": "7.2.*",
+        "symfony/translation": "7.2.*",
+        "symfony/twig-bundle": "7.2.*",
+        "symfony/uid": "7.2.*",
+        "symfony/validator": "7.2.*",
+        "symfony/yaml": "*",
+        "twig/extra-bundle": "^3.0",
+        "twig/twig": "^3.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
+        "sort-packages": true,
+        "audit": {
+            "ignore": [
+                "PKSA-28rh-rzzn-djk4",
+                "PKSA-py8y-z9q7-q197",
+                "PKSA-d1rr-z8zb-qnm7",
+                "PKSA-y6py-qpv1-h52p",
+                "PKSA-365x-2zjk-pt47",
+                "PKSA-b35n-565h-rs4q",
+                "PKSA-bf7t-jnpz-492k",
+                "PKSA-yc7t-91v9-99xs",
+                "PKSA-z7t6-zt6p-wtng"
+            ],
+            "abandoned": "report"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false
+        }
+    }
+}
