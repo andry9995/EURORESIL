@@ -40,15 +40,23 @@ document.getElementById('insSearch').addEventListener('input', function(){
   debounce = setTimeout(()=>searchAssureurs(this.value), 250);
 });
 
-function searchAssureurs(q){
-  if(q.length < 2){ document.getElementById('insList').innerHTML=''; return; }
-  fetch(apiUrl+'?q='+encodeURIComponent(q))
-    .then(r=>r.json())
-    .then(data=>{
-      document.getElementById('insList').innerHTML = data.map(name=>
-        '<button class="ins-item" onclick="selectAssureur(event,''+name.replace(/'/g,"\'")+'')">'+name+'</button>'
-      ).join('');
-    });
+function searchAssureurs(q) {
+  if (q.length < 2) {
+    document.getElementById('insList').innerHTML = '';
+    return;
+  }
+
+  fetch(apiUrl + '?q=' + encodeURIComponent(q))
+          .then(r => r.json())
+          .then(data => {
+            document.getElementById('insList').innerHTML = data.map(name => {
+              const safeName = name.replace(/&/g, '&amp;')
+                      .replace(/'/g, '&#39;')
+                      .replace(/"/g, '&quot;');
+
+              return `<button class="ins-item" onclick="selectAssureur(event, '${safeName}')">${safeName}</button>`;
+            }).join('');
+          });
 }
 
 function selectAssureur(e, name){

@@ -64,7 +64,7 @@ class Resiliation
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $letrecoPliNumber = null;
 
-    #[ORM\OneToMany(mappedBy: 'resiliation', targetEntity: ResilPreuve::class, cascade: ['persist','remove'], orderBy: ['eventDate'=>'ASC'])]
+    #[ORM\OneToMany(mappedBy: 'resiliation', targetEntity: ResilPreuve::class, cascade: ['persist','remove'])]
     private Collection $preuves;
 
     #[ORM\Column]
