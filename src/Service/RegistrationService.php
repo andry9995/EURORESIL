@@ -3,11 +3,17 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Helper\PasswordGenerator;
+use App\Service\LetReco\LetRecoService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Twig\Environment;
 
 readonly class RegistrationService
@@ -16,6 +22,7 @@ readonly class RegistrationService
         private EntityManagerInterface $entityManager,
         private MailerInterface        $mailer,
         private Environment            $twig,
+        private LetRecoService         $letRecoService,
     )
     {
     }
@@ -41,5 +48,33 @@ readonly class RegistrationService
             ->html($this->twig->render('emails/verification_code.html.twig', ['code' => $code, 'user' => $user]));
 
         $this->mailer->send($email);
+    }
+
+    /**
+     * @param User $user
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws Exception
+     */
+    public function createLetRecoAccount(User $user): array
+    {
+        $password = PasswordGenerator::generate();
+
+        $response = $this->letRecoService->createUser([
+            'uid' => $user->getId(),
+            'email' => $user->getEmail(),
+            'company' => $user->getRaisonSociale(),
+            'password' => $password,
+        ]);
+
+        if($response['status']) {
+            $user->setLetRecoPassword($password);
+        }
+
+        return $response;
     }
 }

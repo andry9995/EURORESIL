@@ -18,6 +18,10 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 
 #[Route('/auth')]
 class RegistrationController extends AbstractController
@@ -79,12 +83,22 @@ class RegistrationController extends AbstractController
             $user->setPassword($hasher->hashPassword($user, $form->get('plainPassword')->getData()));
             $this->registrationService->sendVerificationCode($user);
             $request->getSession()->set('pending_user_id', $user->getId());
+
             return $this->redirectToRoute('app_verify_email');
         }
 
         return $this->render('registration/pro.html.twig', ['form' => $form]);
     }
 
+    /**
+     * @throws ORMException
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws OptimisticLockException
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     */
     #[Route('/verify-email', name: 'app_verify_email', methods: ['GET', 'POST'])]
     public function verifyEmail(Request $request, EntityManagerInterface $em): Response
     {
@@ -102,11 +116,19 @@ class RegistrationController extends AbstractController
             } elseif ($user->getVerificationCodeExpiresAt() < new \DateTimeImmutable()) {
                 $this->addFlash('error', 'Code expire. Demandez un nouveau code.');
             } else {
+                $response = $this->registrationService->createLetRecoAccount($user);
+
+                if(!$response['status']) {
+                    $this->addFlash('error', 'Une erreur est survenue lors de la vérification de votre compte');
+                    return $this->render('registration/verify_email.html.twig');
+                }
+
                 $user->setEmailVerifiedAt(new \DateTimeImmutable());
                 $user->setVerificationCode(null);
                 $em->flush();
                 $request->getSession()->remove('pending_user_id');
                 $this->addFlash('success', 'Compte vérifié ! Vous pouvez vous connecter.');
+
                 return $this->redirectToRoute('app_login');
             }
         }
