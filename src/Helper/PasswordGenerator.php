@@ -13,7 +13,7 @@ class PasswordGenerator
      */
     public static function generate(int $length = 16): string
     {
-        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$^*()';
         $password = '';
         $max = strlen($characters) - 1;
 

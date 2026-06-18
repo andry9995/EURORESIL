@@ -113,11 +113,10 @@ class CreditService
     public function getPricingGrid(): array
     {
         return [
-            ['min' => 1,   'max' => 24,  'price' => 4.90, 'label' => 'Standard'],
-            ['min' => 25,  'max' => 99,  'price' => 3.90, 'label' => 'Avantage'],
-            ['min' => 100, 'max' => 299, 'price' => 2.90, 'label' => 'Pro'],
-            ['min' => 300, 'max' => 599, 'price' => 2.40, 'label' => 'Volume'],
-            ['min' => 600, 'max' => null,'price' => 1.95, 'label' => 'Grand compte'],
+            ['quantity' => 10,  'price' => 4.90, 'label' => 'Découverte'],
+            ['quantity' => 50,  'price' => 3.90, 'label' => 'Avantage'],
+            ['quantity' => 200, 'price' => 2.90, 'label' => 'Pro'],
+            ['quantity' => 500, 'price' => 2.40, 'label' => 'Volume'],
         ];
     }
 }

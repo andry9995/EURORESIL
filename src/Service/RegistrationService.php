@@ -67,12 +67,16 @@ readonly class RegistrationService
         $response = $this->letRecoService->createUser([
             'uid' => $user->getId(),
             'email' => $user->getEmail(),
+            'firstName' => $user->getRaisonSociale(),
             'company' => $user->getRaisonSociale(),
             'password' => $password,
         ]);
 
         if($response['status']) {
-            $user->setLetRecoPassword($password);
+            $user
+                ->setLetRecoUserId($response['result']['uid'])
+                ->setLetRecoPassword($password)
+            ;
         }
 
         return $response;

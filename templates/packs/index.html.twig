@@ -1,81 +1,93 @@
 {% extends 'base.html.twig' %}
 {% block title %}Mes packs — EURORESIL{% endblock %}
 {% block body %}
-<div class="pricing wrap">
-  <div class="head">
-    <h2>Des packs <span style="color:var(--blue)">degressifs</span></h2>
-    <p>Plus vous envoyez, moins chaque recommande vous coute. Sans abonnement — vous payez a l'usage.</p>
-  </div>
-  <div class="cred-banner">
-    Votre solde : <strong>{{ app.user.credits }}</strong> recommandes disponibles
-  </div>
-  <div class="calc">
-    <div class="qty">
-      <div>
-        <span class="tierbadge" id="tierBadge">Tarif avantage</span>
-        <div style="font-size:13px;color:var(--ink-soft)">Nombre de recommandes</div>
-      </div>
-      <div class="big" id="qtyVal">50</div>
+    <div class="pricing wrap">
+        <div class="head">
+            <h2>Des packs <span style="color:var(--blue)">degressifs</span></h2>
+            <p>Plus vous envoyez, moins chaque recommande vous coute. Sans abonnement — vous payez a l'usage.</p>
+        </div>
+        <div class="cred-banner">
+            Votre solde : <strong>{{ app.user.credits }}</strong> recommandes disponibles
+        </div>
+        <div class="calc">
+            <div class="qty">
+                <div>
+                    <span class="tierbadge" id="tierBadge">Tarif avantage</span>
+                    <div style="font-size:13px;color:var(--ink-soft)">Nombre de recommandes</div>
+                </div>
+                <div class="big" id="qtyVal">50</div>
+            </div>
+            <input type="range" min="10" max="1000" step="10" value="50" id="qtySlider">
+            <div class="tiers"><span>10</span><span>250</span><span>500</span><span>750</span><span>1000</span></div>
+            <div class="calc-out">
+                <div class="o">
+                    <div class="v" id="unitVal">3,90 €</div>
+                    <div class="k">par recommande</div>
+                </div>
+                <div class="o">
+                    <div class="v" id="totalVal">195 €</div>
+                    <div class="k">total HT</div>
+                </div>
+                <div class="o save">
+                    <div class="v" id="saveVal">50 €</div>
+                    <div class="k">d'economie</div>
+                </div>
+            </div>
+            <form method="post" action="{{ path('app_packs_purchase') }}" id="buyForm">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('packs_purchase') }}">
+                <input type="hidden" name="qty" id="buyQty" value="50">
+                <button class="btn btn-primary btn-block" type="button" id="btnBuy">Acheter ce pack</button>
+            </form>
+        </div>
+        <div class="packs">
+            {% for tier in pricing_grid %}
+                <div class="pack-card pack {% if tier.label == 'Avantage' %}pop{% endif %}" data-qty="{{ tier.quantity }}">
+                    {% if tier.label == 'Avantage' %}
+                        <div class="flag">Populaire</div>{% endif %}
+                    <div class="pq">{{ tier.quantity }}</div>
+                    <div class="pl">{{ tier.label }}</div>
+                    <div class="pu">{{ tier.price|number_format(2,',','') }} €</div>
+                    <div class="pt">/ recommande HT</div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="panel" style="max-width:900px;margin:46px auto 0">
+            <div class="panel-top"><h3>Historique de vos achats</h3></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>N° facture</th>
+                    <th>Date</th>
+                    <th>Pack</th>
+                    <th>Montant TTC</th>
+                    <th>Facture</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invoice in invoices %}
+                    <tr>
+                        <td>{{ invoice.invoiceNumber }}</td>
+                        <td>{{ invoice.issuedAt|date('d/m/Y') }}</td>
+                        <td>{{ invoice.pack ? invoice.pack.qtyPurchased~' recommandes' : '-' }}</td>
+                        <td>{{ invoice.amountTtc|number_format(2,',','') }} €</td>
+                        <td><a class="btn-pdf" href="{{ path('app_invoice_pdf', {id: invoice.id}) }}">PDF</a></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;padding:24px;color:var(--ink-soft)">Aucun achat pour le
+                            moment.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    <input type="range" min="10" max="1000" step="10" value="50" id="qtySlider" oninput="updateCalc()">
-    <div class="tiers"><span>10</span><span>250</span><span>500</span><span>750</span><span>1000</span></div>
-    <div class="calc-out">
-      <div class="o"><div class="v" id="unitVal">3,90 €</div><div class="k">par recommande</div></div>
-      <div class="o"><div class="v" id="totalVal">195 €</div><div class="k">total HT</div></div>
-      <div class="o save"><div class="v" id="saveVal">50 €</div><div class="k">d'economie</div></div>
-    </div>
-    <form method="post" action="{{ path('app_packs_purchase') }}" id="buyForm">
-      <input type="hidden" name="_csrf_token" value="{{ csrf_token('packs_purchase') }}">
-      <input type="hidden" name="qty" id="buyQty" value="50">
-      <button class="btn btn-primary btn-block" type="button" onclick="submitBuy()">Acheter ce pack</button>
-    </form>
-  </div>
-  <div class="packs">
-    {% for tier in pricing_grid %}
-    <div class="pack {% if tier.label == 'Avantage' %}pop{% endif %}" onclick="setQty({{ tier.min }})">
-      {% if tier.label == 'Avantage' %}<div class="flag">Populaire</div>{% endif %}
-      <div class="pq">{{ tier.min }}</div>
-      <div class="pl">{{ tier.label }}</div>
-      <div class="pu">{{ tier.price|number_format(2,',','') }} €</div>
-      <div class="pt">/ recommande HT</div>
-    </div>
-    {% endfor %}
-  </div>
-  <div class="panel" style="max-width:900px;margin:46px auto 0">
-    <div class="panel-top"><h3>Historique de vos achats</h3></div>
-    <table>
-      <thead><tr><th>N° facture</th><th>Date</th><th>Pack</th><th>Montant TTC</th><th>Facture</th></tr></thead>
-      <tbody>
-        {% for invoice in invoices %}
-        <tr>
-          <td>{{ invoice.invoiceNumber }}</td>
-          <td>{{ invoice.issuedAt|date('d/m/Y') }}</td>
-          <td>{{ invoice.pack ? invoice.pack.qtyPurchased~' recommandes' : '-' }}</td>
-          <td>{{ invoice.amountTtc|number_format(2,',','') }} €</td>
-          <td><a class="btn-pdf" href="{{ path('app_invoice_pdf', {id: invoice.id}) }}">PDF</a></td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-soft)">Aucun achat pour le moment.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-<script>
-const pricingUrl = '{{ path('app_packs_pricing') }}';
-function tierFor(q){ if(q>=600)return{u:1.95,n:'Grand compte'};if(q>=300)return{u:2.40,n:'Volume'};if(q>=100)return{u:2.90,n:'Pro'};if(q>=25)return{u:3.90,n:'Avantage'};return{u:4.90,n:'Standard'}; }
-function eur(n){return n.toLocaleString('fr-FR',{maximumFractionDigits:2})+' €';}
-function updateCalc(){
-  const q=+document.getElementById('qtySlider').value, t=tierFor(q);
-  document.getElementById('qtyVal').textContent=q;
-  document.getElementById('tierBadge').textContent='Tarif '+t.n;
-  document.getElementById('unitVal').textContent=t.u.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
-  document.getElementById('totalVal').textContent=eur(q*t.u);
-  document.getElementById('saveVal').textContent=eur(q*(4.90-t.u));
-  document.getElementById('buyQty').value=q;
-}
-function setQty(q){document.getElementById('qtySlider').value=q;updateCalc();document.querySelector('.calc').scrollIntoView({behavior:'smooth',block:'center'});}
-function submitBuy(){document.getElementById('buyForm').submit();}
-updateCalc();
-</script>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        const pricingUrl = '{{ path('app_packs_pricing') }}';
+    </script>
+    {{ importmap('packs') }}
 {% endblock %}

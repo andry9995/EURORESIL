@@ -21,7 +21,7 @@ class LetRecoApi extends AbstractApiClient
         #[Autowire('%env(LETRECO_AUTH_IDENT)%')] string $authIdent,
         #[Autowire('%env(LETRECO_AUTH_PASSWORD)%')] string $authPassword,
         #[Autowire('%env(LETRECO_AUTH_DOMAIN)%')] string $authDomain,
-        #[Autowire('%env(LETRECO_ACTING_AS)%')] string $actingAs,
+//        #[Autowire('%env(LETRECO_ACTING_AS)%')] string $actingAs,
     )
     {
         parent::__construct($em);
@@ -34,7 +34,7 @@ class LetRecoApi extends AbstractApiClient
                 'X-OTC-Auth-Ident' => base64_encode($authIdent),
                 'X-OTC-Auth-Password' => base64_encode($authPassword),
                 'X-OTC-Auth-Domain' => base64_encode($authDomain),
-                'X-OTC-ActingAs-Domain' => base64_encode($actingAs),
+//                'X-OTC-ActingAs-Domain' => base64_encode($actingAs),
             ]
         ]);
     }
@@ -144,5 +144,43 @@ class LetRecoApi extends AbstractApiClient
         return $this->call('POST', '/kwp-user/api/v2/users/createUser', [
             'json' => $payload,
         ]);
+    }
+
+    /**
+     * @param string $email
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getUserByEmail(string $email): array {
+        return $this->call(
+            'GET',
+            sprintf('/kwp-user/api/v2/users/userByEmail/%s', $email),
+        );
+    }
+
+    /**
+     * @param string $email
+     * @param string $password
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function changePassword(string $email, string $password): array {
+        return $this->call(
+            'POST',
+            sprintf('/kwp-user/api/v2/users/userByEmail/%s/password', $email),
+            [
+                'json' => [
+                    'password' => $password,
+                ],
+            ]
+        );
     }
 }

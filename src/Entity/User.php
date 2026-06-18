@@ -68,6 +68,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private \DateTimeImmutable $updatedAt;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $letRecoUserId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $letRecoPassword = null;
 
     public function __construct()
@@ -278,6 +281,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isCourtier(): bool
     {
         return $this->isPro() && $this->profession === Occupation::BROKER;
+    }
+
+    public function getLetRecoUserId(): ?string
+    {
+        return $this->letRecoUserId;
+    }
+
+    public function setLetRecoUserId(?string $letRecoUserId): static
+    {
+        $this->letRecoUserId = $letRecoUserId;
+
+        return $this;
     }
 
     public function getLetRecoPassword(): ?string

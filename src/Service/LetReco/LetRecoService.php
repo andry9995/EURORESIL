@@ -149,15 +149,29 @@ readonly class LetRecoService
      */
     public function createUser(array $params): array
     {
-        return $this->letRecoApi->createUser([
-            'uid' => $params['uid'],
-            'email' => $params['email'],
-            'domain' => 'bscompp',
-            'active' => true,
-            'company' => $params['company'],
-            'locale' => 'fr',
+        $responseCheckUser = $this->letRecoApi->getUserByEmail($params['email']);
+
+        if (!$responseCheckUser['status']) {
+            if($responseCheckUser['code'] === 404){
+                return $this->letRecoApi->createUser([
+                    'uid' => $params['uid'],
+                    'email' => $params['email'],
+                    'domain' => 'bscompp',
+                    'active' => true,
+                    'first_name' => $params['firstName'] ?? '',
+                    'last_name' => $params['lastName'] ?? '',
+                    'company' => $params['company'],
+                    'locale' => 'fr',
 //            'groups' => ["bscompp_users"],
-            'password' => $params['password'],
-        ]);
+                    'password' => $params['password'],
+                ]);
+            }
+
+            return $responseCheckUser;
+        }
+
+        $this->letRecoApi->changePassword($params['email'], $params['password']);
+
+        return $responseCheckUser;
     }
 }
