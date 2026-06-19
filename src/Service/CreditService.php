@@ -1,96 +1,112 @@
 <?php
+
 namespace App\Service;
 
 use App\Entity\Invoice;
 use App\Entity\Pack;
 use App\Entity\User;
+use App\Service\SherlockPay\SherlockPayService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
-/**
- * Gestion des packs de crédits LRE et de la facturation.
- */
 class CreditService
 {
-    /** Paliers tarifaires dégressifs (quantité min => prix unitaire HT) */
-    public const TIERS = [
-        600 => 1.95,
-        300 => 2.40,
-        100 => 2.90,
-        25  => 3.90,
-        1   => 4.90,
-    ];
-
     public const TVA_RATE = 0.20;
 
     public function __construct(
         private readonly EntityManagerInterface $em,
-    ) {}
-
-    /**
-     * Calcule le prix unitaire HT pour une quantité donnée.
-     */
-    public function getUnitPrice(int $qty): float
+        private readonly SherlockPayService $sherlockPayService
+    )
     {
-        foreach (self::TIERS as $minQty => $price) {
-            if ($qty >= $minQty) return $price;
-        }
-        return 4.90;
     }
 
     /**
-     * Calcule le total HT et TTC pour une quantité.
+     * @return array
      */
-    public function calculateAmount(int $qty): array
+    public function getPricingGrid(): array
     {
-        $unitPrice = $this->getUnitPrice($qty);
-        $amountHt  = round($qty * $unitPrice, 2);
-        $tva       = round($amountHt * self::TVA_RATE, 2);
-        $amountTtc = round($amountHt + $tva, 2);
-
         return [
-            'qty'        => $qty,
-            'unit_price' => $unitPrice,
-            'amount_ht'  => $amountHt,
-            'tva'        => $tva,
-            'amount_ttc' => $amountTtc,
+            ['min' => 10, 'max' => 49, 'price' => 4.90, 'label' => 'Découverte'],
+            ['min' => 50, 'max' => 199, 'price' => 3.90, 'label' => 'Avantage'],
+            ['min' => 200, 'max' => 499, 'price' => 2.90, 'label' => 'Pro'],
+            ['min' => 500, 'max' => null, 'price' => 1.95, 'label' => 'Volume'],
         ];
     }
 
     /**
-     * Achète un pack et crédite le compte utilisateur.
-     * (À appeler après confirmation Stripe)
+     * @param int $qty
+     * @return float
      */
-    public function purchasePack(User $user, int $qty): Invoice
+    public function getUnitPrice(int $qty): float
     {
-        $amounts = $this->calculateAmount($qty);
+        foreach ($this->getPricingGrid() as $tier) {
+            if ($qty >= $tier['min'] && ($tier['max'] === null || $qty <= $tier['max'])) {
+                return $tier['price'];
+            }
+        }
 
-        // Créer le pack
-        $pack = new Pack();
-        $pack->setUser($user);
-        $pack->setQtyPurchased($qty);
-        $pack->setUnitPrice((string) $amounts['unit_price']);
-        $pack->setAmountTtc((string) $amounts['amount_ttc']);
-
-        // Créditer l'utilisateur
-        $user->addCredits($qty);
-
-        // Générer la facture
-        $invoice = new Invoice();
-        $invoice->setUser($user);
-        $invoice->setPack($pack);
-        $invoice->setInvoiceNumber($this->generateInvoiceNumber());
-        $invoice->setAmountHt((string) $amounts['amount_ht']);
-        $invoice->setAmountTtc((string) $amounts['amount_ttc']);
-
-        $this->em->persist($pack);
-        $this->em->persist($invoice);
-        $this->em->flush();
-
-        return $invoice;
+        return 4.90;
     }
 
     /**
-     * Débite un crédit pour un envoi LRE.
+     * @param int $qty
+     * @return array
+     */
+    public function calculateAmount(int $qty): array
+    {
+        $unitPrice = $this->getUnitPrice($qty);
+        $amountHt = round($qty * $unitPrice, 2);
+        $tva = round($amountHt * self::TVA_RATE, 2);
+
+        return [
+            'qty' => $qty,
+            'unit_price' => $unitPrice,
+            'amount_ht' => $amountHt,
+            'tva' => $tva,
+            'amount_ttc' => round($amountHt + $tva, 2),
+        ];
+    }
+
+    /**
+     * @param User $user
+     * @param int $qty
+     * @return array
+     */
+    public function purchasePack(User $user, int $qty, ?Invoice $invoice = null): array
+    {
+        $amounts = $this->calculateAmount($qty);
+        $orderId = $this->generateInvoiceNumber();
+
+        $sherlockResponse = $this->sherlockPayService->send([
+            'amount' => $amounts['amount_ttc'],
+            'orderId' => $orderId
+        ]);
+
+        if($sherlockResponse['status']){
+            $pack = $invoice ? $invoice->getPack() : new Pack();
+            $pack->setUser($user);
+            $pack->setQtyPurchased($qty);
+            $pack->setUnitPrice((string)$amounts['unit_price']);
+            $pack->setAmountTtc((string)$amounts['amount_ttc']);
+
+            $invoice = $invoice ?? new Invoice();
+            $invoice->setUser($user);
+            $invoice->setPack($pack);
+            $invoice->setInvoiceNumber($orderId);
+            $invoice->setAmountHt((string)$amounts['amount_ht']);
+            $invoice->setAmountTtc((string)$amounts['amount_ttc']);
+
+            $this->em->persist($pack);
+            $this->em->persist($invoice);
+            $this->em->flush();
+        }
+
+        return $sherlockResponse;
+    }
+
+    /**
+     * @param User $user
+     * @return bool
      */
     public function deductCredit(User $user): bool
     {
@@ -100,23 +116,35 @@ class CreditService
         return true;
     }
 
+    /**
+     * @return string
+     */
     private function generateInvoiceNumber(): string
     {
-        $year  = date('Y');
+        $year = date('Y');
         $count = $this->em->getRepository(Invoice::class)->count([]) + 1;
         return sprintf('EUR-%s-%04d', $year, $count);
     }
 
-    /**
-     * Retourne la grille tarifaire pour l'affichage.
-     */
-    public function getPricingGrid(): array
+    public function afterPay(Request $request): array
     {
-        return [
-            ['quantity' => 10,  'price' => 4.90, 'label' => 'Découverte'],
-            ['quantity' => 50,  'price' => 3.90, 'label' => 'Avantage'],
-            ['quantity' => 200, 'price' => 2.90, 'label' => 'Pro'],
-            ['quantity' => 500, 'price' => 2.40, 'label' => 'Volume'],
-        ];
+        $response = $this->sherlockPayService->paymentResponse($request);
+
+        if($response['success']){
+            $invoiceNumber = $response['data']['orderId'];
+            $invoice = $this->em->getRepository(Invoice::class)->findOneBy(['invoiceNumber' => $invoiceNumber]);
+            if($invoice){
+                $invoice->setPaidAt(new \DateTimeImmutable());
+                $this->em->persist($invoice);
+
+                $user = $invoice->getUser();
+                $user->addCredits($invoice->getPack()->getQtyPurchased());
+                $this->em->persist($user);
+
+                $this->em->flush();
+            }
+        }
+
+        return $response;
     }
 }

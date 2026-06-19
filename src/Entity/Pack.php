@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -36,21 +37,73 @@ class Pack
 
     public function __construct()
     {
-        $this->id        = Uuid::v4()->toRfc4122();
+        $this->id = Uuid::v4()->toRfc4122();
         $this->createdAt = new \DateTimeImmutable();
         $this->expiresAt = new \DateTimeImmutable('+12 months');
     }
 
-    public function getId(): string { return $this->id; }
-    public function getUser(): User { return $this->user; }
-    public function setUser(User $u): static { $this->user = $u; return $this; }
-    public function getQtyPurchased(): int { return $this->qtyPurchased; }
-    public function setQtyPurchased(int $q): static { $this->qtyPurchased = $q; $this->qtyRemaining = $q; return $this; }
-    public function getQtyRemaining(): int { return $this->qtyRemaining; }
-    public function getUnitPrice(): string { return $this->unitPrice; }
-    public function setUnitPrice(string $p): static { $this->unitPrice = $p; return $this; }
-    public function getAmountTtc(): string { return $this->amountTtc; }
-    public function setAmountTtc(string $a): static { $this->amountTtc = $a; return $this; }
-    public function getExpiresAt(): ?\DateTimeImmutable { return $this->expiresAt; }
-    public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $u): static
+    {
+        $this->user = $u;
+        return $this;
+    }
+
+    public function getQtyPurchased(): int
+    {
+        return $this->qtyPurchased;
+    }
+
+    public function setQtyPurchased(int $q): static
+    {
+        $this->qtyPurchased = $q;
+        $this->qtyRemaining = $q;
+        return $this;
+    }
+
+    public function getQtyRemaining(): int
+    {
+        return $this->qtyRemaining;
+    }
+
+    public function getUnitPrice(): string
+    {
+        return $this->unitPrice;
+    }
+
+    public function setUnitPrice(string $p): static
+    {
+        $this->unitPrice = $p;
+        return $this;
+    }
+
+    public function getAmountTtc(): string
+    {
+        return $this->amountTtc;
+    }
+
+    public function setAmountTtc(string $a): static
+    {
+        $this->amountTtc = $a;
+        return $this;
+    }
+
+    public function getExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->expiresAt;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 }

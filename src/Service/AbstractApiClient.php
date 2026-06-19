@@ -81,11 +81,17 @@ abstract class AbstractApiClient
         } finally {
             $durationMs = (int) round((microtime(true) - $startTime) * 1000);
 
+            $payload = $options['json'] ?? $options['body'] ?? null;
+
+            if(!is_array($payload)){
+                $payload = json_decode($payload, true);
+            }
+
             $log = new ApiLog();
             $log->setApiName($this->getApiName())
                 ->setMethod($method)
                 ->setUri($uri)
-                ->setPayload($options['json'] ?? $options['body'] ?? null)
+                ->setPayload($payload)
                 ->setResponse($result)
                 ->setStatusCode($statusCode)
                 ->setDurationMs($durationMs);

@@ -1,13 +1,16 @@
 function tierFor(q) {
-    if (q >= 600) return {u: 1.95, n: 'Grand compte'};
-    if (q >= 300) return {u: 2.40, n: 'Volume'};
-    if (q >= 100) return {u: 2.90, n: 'Pro'};
-    if (q >= 25) return {u: 3.90, n: 'Avantage'};
-    return {u: 4.90, n: 'Standard'};
+    if (typeof pricingGrid !== 'undefined' && Array.isArray(pricingGrid)) {
+        for (const tier of pricingGrid) {
+            if (q >= tier.min && (tier.max === null || q <= tier.max)) {
+                return { u: tier.price, n: tier.label };
+            }
+        }
+    }
+    return { u: 4.90, n: 'Découverte' };
 }
 
 function eur(n) {
-    return n.toLocaleString('fr-FR', {maximumFractionDigits: 2}) + ' €';
+    return n.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' €';
 }
 
 function updateCalc() {
@@ -31,7 +34,7 @@ function setQty(q) {
     if (slider) {
         slider.value = q;
         updateCalc();
-        document.querySelector('.calc').scrollIntoView({behavior: 'smooth', block: 'center'});
+        document.querySelector('.calc').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 

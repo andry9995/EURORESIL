@@ -37,6 +37,9 @@ class Invoice
     #[ORM\Column]
     private \DateTimeImmutable $issuedAt;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $paidAt = null;
+
     public function __construct()
     {
         $this->id       = Uuid::v4()->toRfc4122();
@@ -58,4 +61,16 @@ class Invoice
     public function getPdfPath(): ?string { return $this->pdfPath; }
     public function setPdfPath(?string $p): static { $this->pdfPath = $p; return $this; }
     public function getIssuedAt(): \DateTimeImmutable { return $this->issuedAt; }
+
+    public function getPaidAt(): ?\DateTimeImmutable
+    {
+        return $this->paidAt;
+    }
+
+    public function setPaidAt(?\DateTimeImmutable $paidAt): static
+    {
+        $this->paidAt = $paidAt;
+
+        return $this;
+    }
 }

@@ -40,11 +40,11 @@
             </form>
         </div>
         <div class="packs">
-            {% for tier in pricing_grid %}
-                <div class="pack-card pack {% if tier.label == 'Avantage' %}pop{% endif %}" data-qty="{{ tier.quantity }}">
+            {% for tier in pricingGrid %}
+                <div class="pack-card pack {% if tier.label == 'Avantage' %}pop{% endif %}" data-qty="{{ tier.min }}">
                     {% if tier.label == 'Avantage' %}
                         <div class="flag">Populaire</div>{% endif %}
-                    <div class="pq">{{ tier.quantity }}</div>
+                    <div class="pq">{{ tier.min }}</div>
                     <div class="pl">{{ tier.label }}</div>
                     <div class="pu">{{ tier.price|number_format(2,',','') }} €</div>
                     <div class="pt">/ recommande HT</div>
@@ -60,7 +60,7 @@
                     <th>Date</th>
                     <th>Pack</th>
                     <th>Montant TTC</th>
-                    <th>Facture</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -70,7 +70,18 @@
                         <td>{{ invoice.issuedAt|date('d/m/Y') }}</td>
                         <td>{{ invoice.pack ? invoice.pack.qtyPurchased~' recommandes' : '-' }}</td>
                         <td>{{ invoice.amountTtc|number_format(2,',','') }} €</td>
-                        <td><a class="btn-pdf" href="{{ path('app_invoice_pdf', {id: invoice.id}) }}">PDF</a></td>
+                        <td>
+                            {% if invoice.paidAt %}
+                                <a class="btn btn-pdf" href="{{ path('app_invoice_pdf', {id: invoice.id}) }}">PDF</a>
+                            {% else %}
+                                <a
+                                        href="{{ path('app_packs_continue_purchase', {id: invoice.id}) }}"
+                                        class="btn btn-pdf"
+                                >
+                                    Continuer le paiement
+                                </a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
@@ -88,6 +99,7 @@
     {{ parent() }}
     <script>
         const pricingUrl = '{{ path('app_packs_pricing') }}';
+        const pricingGrid = {{ pricingGrid|json_encode|raw }};
     </script>
     {{ importmap('packs') }}
 {% endblock %}

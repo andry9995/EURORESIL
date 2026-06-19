@@ -1,7 +1,9 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Entity\User;
 use App\Service\CreditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,51 +13,92 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/packs')]
-#[IsGranted('ROLE_USER')]
 class PackController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly CreditService $creditService,
-    ) {}
+        private readonly CreditService          $creditService,
+    )
+    {
+    }
 
     #[Route('', name: 'app_packs')]
     public function index(): Response
     {
-        $user     = $this->getUser();
+        $user = $this->getUser();
         $invoices = $this->em->getRepository(Invoice::class)->findBy(
             ['user' => $user],
             ['issuedAt' => 'DESC']
         );
 
         return $this->render('packs/index.html.twig', [
-            'user'         => $user,
-            'invoices'     => $invoices,
-            'pricing_grid' => $this->creditService->getPricingGrid(),
+            'user' => $user,
+            'invoices' => $invoices,
+            'pricingGrid' => $this->creditService->getPricingGrid(),
         ]);
     }
 
     #[Route('/pricing', name: 'app_packs_pricing')]
     public function pricing(Request $request): Response
     {
-        $qty = max(1, min(1000, (int) $request->query->get('qty', 50)));
+        $qty = max(1, min(1000, (int)$request->query->get('qty', 50)));
         return $this->json($this->creditService->calculateAmount($qty));
     }
 
     #[Route('/purchase', name: 'app_packs_purchase', methods: ['POST'])]
     public function purchase(Request $request): Response
     {
-        $qty = (int) $request->request->get('qty', 0);
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+
+        $qty = (int)$request->request->get('qty', 0);
         if ($qty < 1 || $qty > 10000) {
             $this->addFlash('error', 'Quantite invalide.');
             return $this->redirectToRoute('app_packs');
         }
 
-        // TODO: déclencher Stripe et attendre la confirmation webhook
-        // Pour le moment, achat direct (à remplacer par le flux Stripe en production)
-        $invoice = $this->creditService->purchasePack($this->getUser(), $qty);
+        $response = $this->creditService->purchasePack($user, $qty);
 
-        $this->addFlash('success', sprintf('%d recommandes ajoutes. Facture %s generee.', $qty, $invoice->getInvoiceNumber()));
+        if (!$response['status']) {
+            $this->addFlash('error', "Une erreur est survenue lors de l'achat du crédit.");
+
+            return $this->redirectToRoute('app_packs');
+        }
+
+        return $this->render('packs/sherlock_redirect.html.twig', [
+            'sherlock' => $response['result']
+        ]);
+    }
+
+    #[Route('/continue-purchase/{id}', name: 'app_packs_continue_purchase', methods: ['GET'])]
+    public function continuePurchase(Request $request, Invoice $invoice): Response
+    {
+        $response = $this->creditService->purchasePack($invoice->getUser(), $invoice->getPack()->getQtyPurchased(), $invoice);
+
+        if (!$response['status']) {
+            $this->addFlash('error', "Une erreur est survenue lors de l'achat du crédit.");
+
+            return $this->redirectToRoute('app_packs');
+        }
+
+        return $this->render('packs/sherlock_redirect.html.twig', [
+            'sherlock' => $response['result']
+        ]);
+    }
+
+    #[Route('/pay', name: 'app_pack_pay')]
+    public function pay(Request $request): Response
+    {
+        $response = $this->creditService->afterPay($request);
+
+        if ($response['success']) {
+            $this->addFlash('success', "Paiement effectué.");
+        } else {
+            $this->addFlash('error', "Une erreur est survenue lors du paiement.");
+        }
+
         return $this->redirectToRoute('app_packs');
     }
 

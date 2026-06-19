@@ -29,4 +29,5 @@ security:
     access_control:
         - { path: ^/auth, roles: PUBLIC_ACCESS }
         - { path: ^/webhook, roles: PUBLIC_ACCESS }
+        - { path: ^/packs/pay, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }
