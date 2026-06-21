@@ -2,11 +2,18 @@
 
 namespace App\Service;
 
+use App\Entity\Document;
 use App\Entity\Invoice;
 use App\Entity\Pack;
 use App\Entity\User;
+use App\Enum\DocumentType;
+use App\Service\PDF\OpenTBSService;
+use App\Service\PDF\PDFHelper;
+use App\Service\PDF\PDFService;
 use App\Service\SherlockPay\SherlockPayService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 
 class CreditService
@@ -15,7 +22,9 @@ class CreditService
 
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly SherlockPayService $sherlockPayService
+        private readonly SherlockPayService     $sherlockPayService,
+        private readonly PDFService             $PDFService,
+        private ParameterBagInterface $params,
     )
     {
     }
@@ -70,6 +79,7 @@ class CreditService
     /**
      * @param User $user
      * @param int $qty
+     * @param Invoice|null $invoice
      * @return array
      */
     public function purchasePack(User $user, int $qty, ?Invoice $invoice = null): array
@@ -82,12 +92,13 @@ class CreditService
             'orderId' => $orderId
         ]);
 
-        if($sherlockResponse['status']){
+        if ($sherlockResponse['status']) {
             $pack = $invoice ? $invoice->getPack() : new Pack();
             $pack->setUser($user);
             $pack->setQtyPurchased($qty);
             $pack->setUnitPrice((string)$amounts['unit_price']);
             $pack->setAmountTtc((string)$amounts['amount_ttc']);
+            $this->em->persist($pack);
 
             $invoice = $invoice ?? new Invoice();
             $invoice->setUser($user);
@@ -96,7 +107,6 @@ class CreditService
             $invoice->setAmountHt((string)$amounts['amount_ht']);
             $invoice->setAmountTtc((string)$amounts['amount_ttc']);
 
-            $this->em->persist($pack);
             $this->em->persist($invoice);
             $this->em->flush();
         }
@@ -130,10 +140,10 @@ class CreditService
     {
         $response = $this->sherlockPayService->paymentResponse($request);
 
-        if($response['success']){
+        if ($response['success']) {
             $invoiceNumber = $response['data']['orderId'];
             $invoice = $this->em->getRepository(Invoice::class)->findOneBy(['invoiceNumber' => $invoiceNumber]);
-            if($invoice){
+            if ($invoice) {
                 $invoice->setPaidAt(new \DateTimeImmutable());
                 $this->em->persist($invoice);
 
@@ -142,9 +152,58 @@ class CreditService
                 $this->em->persist($user);
 
                 $this->em->flush();
+
+                $this->generatePDF($invoice);
             }
         }
 
         return $response;
+    }
+
+    /**
+     * @param Invoice $invoice
+     * @return array
+     */
+    public function generatePDF(Invoice $invoice): array
+    {
+        $data = [
+            'numFacture' => $invoice->getInvoiceNumber(),
+            'dateFacture' => $invoice->getIssuedAt()->format('d/m/Y'),
+            'nom' => $invoice->getUser()->getRaisonSociale(),
+            'telephone' => "0000000000",
+            'email' => $invoice->getUser()->getEmail(),
+            'objet' => "Achat de packs recommandés",
+            'description' => "Packs recommandés",
+            'quantite' => $invoice->getPack()->getQtyPurchased(),
+            'montant' => $invoice->getPack()->getUnitPrice(),
+            'totalHt' => $invoice->getAmountHt(),
+            'tauxTva' => $invoice->getTvaRate(),
+            'tva' => ((float)$invoice->getAmountHt() * (float)$invoice->getTvaRate()) / 100,
+            'totalTtc' => $invoice->getAmountTtc(),
+            'siret' => $invoice->getUser()->getSiret(),
+            'datePaiement' => $invoice->getPaidAt() ? $invoice->getPaidAt()->format('d/m/Y') : '-',
+        ];
+
+        $templateName = 'facture';
+        $outputFileName = 'FACTURE_' . $invoice->getInvoiceNumber();
+
+        $pdf = $this->PDFService->generate($data, $templateName, $outputFileName);
+
+        $document = $invoice->getDocument() ?? new Document();
+        $document->setName($pdf['nom']);
+        $document->setType(DocumentType::INVOICE);
+        $this->em->persist($document);
+
+        $invoice->setDocument($document);
+        $this->em->persist($invoice);
+
+        $this->em->flush();
+
+        $documentFilePath = $this->params->get("documents_directory");
+
+        $file = new File($pdf['path']);
+        $file->move($documentFilePath, $document->getId());
+
+        return $pdf;
     }
 }

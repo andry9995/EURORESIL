@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
@@ -25,12 +26,46 @@ class RefAssureur
     #[ORM\Column(options: ['default' => true])]
     private bool $active = true;
 
-    public function getId(): int { return $this->id; }
-    public function getName(): string { return $this->name; }
-    public function setName(string $n): static { $this->name = $n; return $this; }
-    public function getAliases(): ?array { return $this->aliases; }
-    public function setAliases(?array $a): static { $this->aliases = $a; return $this; }
-    public function getLreEmail(): ?string { return $this->lreEmail; }
-    public function setLreEmail(?string $e): static { $this->lreEmail = $e; return $this; }
-    public function isActive(): bool { return $this->active; }
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $n): static
+    {
+        $this->name = $n;
+        return $this;
+    }
+
+    public function getAliases(): ?array
+    {
+        return $this->aliases;
+    }
+
+    public function setAliases(?array $a): static
+    {
+        $this->aliases = $a;
+        return $this;
+    }
+
+    public function getLreEmail(): ?string
+    {
+        return $this->lreEmail;
+    }
+
+    public function setLreEmail(?string $e): static
+    {
+        $this->lreEmail = $e;
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
 }

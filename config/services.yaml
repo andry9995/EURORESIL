@@ -1,3 +1,8 @@
+parameters:
+    documents_directory: '%kernel.project_dir%\public\documents\'
+    tmp_directory: '%kernel.project_dir%\var\tmp\'
+    odt_directory: '%kernel.project_dir%\templates\odt\'
+
 services:
     _defaults:
         autowire: true

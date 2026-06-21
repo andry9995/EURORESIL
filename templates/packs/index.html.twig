@@ -4,16 +4,16 @@
     <div class="pricing wrap">
         <div class="head">
             <h2>Des packs <span style="color:var(--blue)">degressifs</span></h2>
-            <p>Plus vous envoyez, moins chaque recommande vous coute. Sans abonnement — vous payez a l'usage.</p>
+            <p>Plus vous envoyez, moins chaque recommandé vous coûte. Sans abonnement — vous payez a l'usage.</p>
         </div>
         <div class="cred-banner">
-            Votre solde : <strong>{{ app.user.credits }}</strong> recommandes disponibles
+            Votre solde : <strong>{{ app.user.credits }}</strong> recommandés disponibles
         </div>
         <div class="calc">
             <div class="qty">
                 <div>
                     <span class="tierbadge" id="tierBadge">Tarif avantage</span>
-                    <div style="font-size:13px;color:var(--ink-soft)">Nombre de recommandes</div>
+                    <div style="font-size:13px;color:var(--ink-soft)">Nombre de recommandés</div>
                 </div>
                 <div class="big" id="qtyVal">50</div>
             </div>
@@ -22,7 +22,7 @@
             <div class="calc-out">
                 <div class="o">
                     <div class="v" id="unitVal">3,90 €</div>
-                    <div class="k">par recommande</div>
+                    <div class="k">par recommandé</div>
                 </div>
                 <div class="o">
                     <div class="v" id="totalVal">195 €</div>
@@ -47,7 +47,7 @@
                     <div class="pq">{{ tier.min }}</div>
                     <div class="pl">{{ tier.label }}</div>
                     <div class="pu">{{ tier.price|number_format(2,',','') }} €</div>
-                    <div class="pt">/ recommande HT</div>
+                    <div class="pt">/ recommandé HT</div>
                 </div>
             {% endfor %}
         </div>
@@ -68,11 +68,11 @@
                     <tr>
                         <td>{{ invoice.invoiceNumber }}</td>
                         <td>{{ invoice.issuedAt|date('d/m/Y') }}</td>
-                        <td>{{ invoice.pack ? invoice.pack.qtyPurchased~' recommandes' : '-' }}</td>
+                        <td>{{ invoice.pack ? invoice.pack.qtyPurchased~' recommandés' : '-' }}</td>
                         <td>{{ invoice.amountTtc|number_format(2,',','') }} €</td>
                         <td>
                             {% if invoice.paidAt %}
-                                <a class="btn btn-pdf" href="{{ path('app_invoice_pdf', {id: invoice.id}) }}">PDF</a>
+                                <a class="btn btn-pdf" href="{{ path('app_download', {id: invoice.document.id}) }}" target="_blank">PDF</a>
                             {% else %}
                                 <a
                                         href="{{ path('app_packs_continue_purchase', {id: invoice.id}) }}"
