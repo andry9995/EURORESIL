@@ -38,13 +38,6 @@ class PackController extends AbstractController
         ]);
     }
 
-    #[Route('/pricing', name: 'app_packs_pricing')]
-    public function pricing(Request $request): Response
-    {
-        $qty = max(1, min(1000, (int)$request->query->get('qty', 50)));
-        return $this->json($this->creditService->calculateAmount($qty));
-    }
-
     #[Route('/purchase', name: 'app_packs_purchase', methods: ['POST'])]
     public function purchase(Request $request): Response
     {
@@ -99,20 +92,6 @@ class PackController extends AbstractController
             $this->addFlash('error', "Une erreur est survenue lors du paiement.");
         }
 
-        return $this->redirectToRoute('app_packs');
-    }
-
-    #[Route('/invoice/{id}/pdf', name: 'app_invoice_pdf')]
-    public function invoicePdf(string $id): Response
-    {
-        $invoice = $this->em->find(Invoice::class, $id);
-        if (!$invoice || $invoice->getUser()->getId() !== $this->getUser()->getId()) {
-            throw $this->createNotFoundException();
-        }
-
-        // TODO: générer / servir le PDF de facture depuis S3
-        // Pour la démonstration, redirection
-        $this->addFlash('info', 'Generation PDF en cours...');
         return $this->redirectToRoute('app_packs');
     }
 }

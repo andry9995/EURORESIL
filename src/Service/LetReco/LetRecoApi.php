@@ -62,6 +62,8 @@ class LetRecoApi extends AbstractApiClient
 
     /**
      * @param array $payload
+     * @param string $customIdent
+     * @param string $customPassword
      * @return array
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
@@ -69,10 +71,14 @@ class LetRecoApi extends AbstractApiClient
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function postRecord(array $payload): array
+    public function postRecord(array $payload, string $customIdent, string $customPassword): array
     {
         return $this->call('POST', '/kwp-user/api/v2/records', [
             'json' => $payload,
+            'headers' => [
+                'X-OTC-Auth-Ident' => base64_encode($customIdent),
+                'X-OTC-Auth-Password' => base64_encode($customPassword),
+            ]
         ]);
     }
 
@@ -111,7 +117,6 @@ class LetRecoApi extends AbstractApiClient
     }
 
     /**
-     * @param string $type
      * @param string $reference
      * @return array
      * @throws ClientExceptionInterface
@@ -120,11 +125,11 @@ class LetRecoApi extends AbstractApiClient
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function downloadProof(string $type, string $reference): array
+    public function depositProof(string $reference): array
     {
         return $this->call(
             'GET',
-            sprintf('/kwp-user/api/v2/proof/%s/%s', $type, $reference),
+            sprintf('/kwp-user/api/v2/proof/deposit/%s', $reference),
             [],
             true
         );

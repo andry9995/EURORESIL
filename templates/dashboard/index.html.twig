@@ -1,46 +1,76 @@
 {% extends 'base.html.twig' %}
 {% block title %}Tableau de bord — EURORESIL{% endblock %}
 {% block body %}
-<div class="dash wrap">
-  <div class="dash-head">
-    <div><h2>Tableau de bord</h2><p>Bonjour {{ user.raisonSociale ?? user.email }} — voici vos resiliations en cours.</p></div>
-    <a class="btn btn-primary" href="{{ path('app_wizard_souscripteur') }}">+ Nouvelle resiliation</a>
-  </div>
-  <div class="credit-bar">
-    <div><span class="ic">💳</span> <strong style="font-size:20px">{{ user.credits }}</strong> recommandes disponibles · valables 12 mois</div>
-    <a class="btn btn-amber" href="{{ path('app_packs') }}">Acheter un pack</a>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="n">{{ stats.total }}</div><div class="l">Total ce compte</div></div>
-    <div class="stat"><div class="n b">{{ stats.received }}</div><div class="l">Bien recues</div></div>
-    <div class="stat"><div class="n a">{{ stats.sending }}</div><div class="l">En cours</div></div>
-    <div class="stat"><div class="n">{{ stats.credits }}</div><div class="l">Credits restants</div></div>
-  </div>
-  <div class="panel">
-    <div class="panel-top"><h3>Demandes en cours</h3></div>
-    <table>
-      <thead><tr><th>Client</th><th>Type</th><th>Assureur</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
-      <tbody>
-        {% for r in resiliations %}
-        <tr class="row" onclick="window.location='{{ path('app_dashboard_detail', {id: r.id}) }}'">
-          <td><span class="avatar">{{ r.souscripteurNomComplet|slice(0,2)|upper }}</span>{{ r.souscripteurNomComplet }}</td>
-          <td>{{ r.typeContrat }}</td>
-          <td>{{ r.assureurNom }}</td>
-          <td><span class="tag {{ r.status }}"><i></i>{{ r.statusLabel }}</span></td>
-          <td>{{ r.createdAt|date('d/m/Y') }}</td>
-          <td>
-            {% if r.status == 'draft' %}
-              <a class="btn-pdf" href="{{ path('app_wizard_souscripteur', {id: r.id}) }}" onclick="event.stopPropagation()">Continuer</a>
-            {% else %}
-              <a class="btn-pdf" href="{{ path('app_dashboard_detail', {id: r.id}) }}" onclick="event.stopPropagation()">Preuves</a>
-            {% endif %}
-          </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--ink-soft)">Aucune resiliation pour le moment. <a href="{{ path('app_wizard_souscripteur') }}" class="auth-link">Demarrez une resiliation</a></td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+    <div class="dash wrap">
+        <div class="dash-head">
+            <div><h2>Tableau de bord</h2>
+                <p>Bonjour {{ user.raisonSociale ?? user.email }} — voici vos résiliations.</p></div>
+            <a class="btn btn-primary" href="{{ path('app_cancellation_subscriber') }}">+ Nouvelle resiliation</a>
+        </div>
+        <div class="credit-bar">
+            <div><span class="ic">💳</span> <strong style="font-size:20px">{{ user.credits }}</strong> crédits
+                disponibles
+            </div>
+            <a class="btn btn-amber" href="{{ path('app_packs') }}">Acheter un pack</a>
+        </div>
+        <div class="stats">
+            <div class="stat">
+                <div class="n">{{ stats.total }}</div>
+                <div class="l">Total des résiliations</div>
+            </div>
+            <div class="stat">
+                <div class="n b">{{ stats.sent }}</div>
+                <div class="l">Envoyées</div>
+            </div>
+            <div class="stat">
+                <div class="n a">{{ stats.draft }}</div>
+                <div class="l">Brouillon / En cours</div>
+            </div>
+            <div class="stat">
+                <div class="n">{{ stats.credits }}</div>
+                <div class="l">Credits restants</div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-top"><h3>Lettres recommandées</h3></div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Souscripteur</th>
+                    <th>Contrat</th>
+                    <th>Assureur</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for cancellation in cancellations %}
+                    <tr>
+                        <td>
+                            <span class="avatar">{{ cancellation.getSubscriberFullName()|slice(0,2)|upper }}</span>{{ cancellation.getSubscriberFullName() }}
+                        </td>
+                        <td>{{ cancellation.contractType.label }} n° {{ cancellation.contractReference }}</td>
+                        <td>{{ cancellation.insurer.name }}</td>
+                        <td><span class="tag {{ cancellation.status.value }}"><i></i>{{ cancellation.status.label }}</span></td>
+                        <td>{{ cancellation.createdAt|date('d/m/Y') }}</td>
+                        <td>
+                            {% if cancellation.status == constant('App\\Enum\\CancellationStatus::DRAFT')  %}
+                                <a class="btn-pdf" href="{{ path('app_cancellation_subscriber', {id: cancellation.id}) }}">Continuer</a>
+                            {% else %}
+                                <a class="btn-pdf" href="{{ path('app_cancellation_detail', {id: cancellation.id}) }}">Détails</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:32px;color:var(--ink-soft)">Aucune resiliation
+                            pour le moment. <a href="{{ path('app_cancellation_subscriber') }}" class="auth-link">Demarrez
+                                une resiliation</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}

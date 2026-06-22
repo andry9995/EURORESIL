@@ -1,5 +1,6 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './js/euroresil.js';
 import './styles/app.css';
 
 // Initialisation des tooltips Bootstrap

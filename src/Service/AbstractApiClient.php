@@ -59,7 +59,7 @@ abstract class AbstractApiClient
             $isSuccess = $statusCode >= 200 && $statusCode < 300;
 
             if ($isSuccess) {
-                $result = $asBinary ? ['binary_data' => '...'] : $response->toArray(false);
+                $result = $asBinary ? $response->getContent() : $response->toArray(false);
             } else {
                 $result = ['error' => $response->getContent(false)];
             }

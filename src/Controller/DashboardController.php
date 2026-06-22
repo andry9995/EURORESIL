@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Controller;
 
-use App\Entity\Resiliation;
+use App\Entity\Cancellation;
+use App\Entity\User;
+use App\Enum\CancellationStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,29 +15,33 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class DashboardController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $em) {}
+    public function __construct(private readonly EntityManagerInterface $em)
+    {
+    }
 
     #[Route('', name: 'app_dashboard')]
     public function index(): Response
     {
-        $user         = $this->getUser();
-        $resiliations = $this->em->getRepository(Resiliation::class)->findBy(
+        /**
+         * @var User $user
+         */
+        $user = $this->getUser();
+        $cancellations = $this->em->getRepository(Cancellation::class)->findBy(
             ['user' => $user],
             ['createdAt' => 'DESC'],
-            50
         );
 
         $stats = [
-            'total'    => count($resiliations),
-            'received' => count(array_filter($resiliations, fn($r) => $r->getStatus() === 'received')),
-            'sending'  => count(array_filter($resiliations, fn($r) => in_array($r->getStatus(), ['sending','sent']))),
-            'credits'  => $user->getCredits(),
+            'total' => count($cancellations),
+            'sent' => count(array_filter($cancellations, fn($r) => $r->getStatus() === CancellationStatus::SENT)),
+            'draft' => count(array_filter($cancellations, fn($r) => in_array($r->getStatus(), [CancellationStatus::DRAFT, CancellationStatus::SENDING]))),
+            'credits' => $user->getCredits(),
         ];
 
         return $this->render('dashboard/index.html.twig', [
-            'resiliations' => $resiliations,
-            'stats'        => $stats,
-            'user'         => $user,
+            'cancellations' => $cancellations,
+            'stats' => $stats,
+            'user' => $user,
         ]);
     }
 

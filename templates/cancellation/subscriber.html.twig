@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+{% block title %}Souscripteur — EURORESIL{% endblock %}
+
+{% block body %}
+    <div class="wizard wrap">
+        {% include 'cancellation/partials/_stepper.html.twig' %}
+        <h2>Le souscripteur</h2>
+        <p class="sub">Les coordonnées de la personne dont on résilie le contrat.</p>
+
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
+
+        <div class="cat-radio">
+            {% for child in form.subscriber.category %}
+                <label class="cat" id="cat{{ child.vars.value|capitalize }}">
+                    {{ form_widget(child) }}
+                    {{ child.vars.label }}
+                </label>
+                </label>
+            {% endfor %}
+        </div>
+
+        <div class="field-row" id="proFields" style="display:none">
+            <div class="field">
+                <label>Société et statut</label>
+                {{ form_widget(form.subscriber.company, {'attr': {'placeholder': 'Raison sociale'}}) }}
+            </div>
+            <div class="field">
+                <label>N° SIRET / SIREN</label>
+                {{ form_widget(form.subscriber.siret, {'attr': {'placeholder': '123 456 789 00012'}}) }}
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Civilité</label>
+            {{ form_widget(form.subscriber.civility) }}
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label>Nom *</label>
+                {{ form_widget(form.subscriber.last_name, {'attr': {'placeholder': 'Durand'}}) }}
+                {{ form_errors(form.subscriber.last_name) }}
+            </div>
+            <div class="field">
+                <label>Nom de naissance</label>
+                {{ form_widget(form.subscriber.birth_name, {'attr': {'placeholder': '(optionnel)'}}) }}
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Prénom *</label>
+            {{ form_widget(form.subscriber.first_name, {'attr': {'placeholder': 'Camille'}}) }}
+            {{ form_errors(form.subscriber.first_name) }}
+        </div>
+
+        <div class="field">
+            <label>Adresse *</label>
+            {{ form_widget(form.subscriber.address, {'attr': {'placeholder': '12 rue des Lilas'}}) }}
+            {{ form_errors(form.subscriber.address) }}
+        </div>
+
+        <div class="field">
+            <label>Complément d'adresse</label>
+            {{ form_widget(form.subscriber.address_complement, {'attr': {'placeholder': 'Bâtiment, étage...'}}) }}
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label>Code postal *</label>
+                {{ form_widget(form.subscriber.zip_code, {'attr': {'placeholder': '26110'}}) }}
+                {{ form_errors(form.subscriber.zip_code) }}
+            </div>
+            <div class="field">
+                <label>Ville *</label>
+                {{ form_widget(form.subscriber.city, {'attr': {'placeholder': 'Nyons'}}) }}
+                {{ form_errors(form.subscriber.city) }}
+            </div>
+        </div>
+
+        <div class="field-row">
+            <div class="field">
+                <label>Pays *</label>
+                {{ form_widget(form.subscriber.country) }}
+            </div>
+            <div class="field">
+                <label>E-mail *</label>
+                {{ form_widget(form.subscriber.email, {'attr': {'placeholder': 'contact@email.fr'}}) }}
+                {{ form_errors(form.subscriber.email) }}
+            </div>
+        </div>
+
+        {% if form.subscriber.client_reference is defined %}
+            <div class="field" style="margin-top:8px">
+                <label>Votre référence pour ce client</label>
+                {{ form_widget(form.subscriber.client_reference, {'attr': {'placeholder': 'Référence interne'}}) }}
+            </div>
+        {% endif %}
+
+        <div class="nav-btns">
+            <a class="btn btn-ghost" href="{{ path('app_home') }}">Retour</a>
+            <button class="btn btn-primary" type="submit">Continuer</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('subscriber') }}
+{% endblock %}

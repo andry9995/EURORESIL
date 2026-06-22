@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+{% block title %}Type de Contrat — EURORESIL{% endblock %}
+
+{% block body %}
+    <div class="wizard wrap">
+        {% include 'cancellation/partials/_stepper.html.twig' %}
+        <h2>Quel type de contrat résilier chez {{ cancellation.insurer.name }} ?</h2>
+        <p class="sub">Sélectionnez la nature du contrat.</p>
+
+        <input class="ins-search" id="typeSearch" placeholder="Rechercher un type de contrat (ex: Auto...)" autocomplete="off">
+
+        {{ form_start(form, {'attr': {'id': 'typeForm'}}) }}
+        {{ form_errors(form) }}
+        <div class="ctype-list" id="typeList">
+            {% for type in contract_types %}
+                <button type="button" class="ctype-item {% if cancellation.contractType and cancellation.contractType.value == type.key %}active{% endif %}" data-key="{{ type.key }}" data-label="{{ type.label }}">
+                    {% if type.icon %}
+                        <i class="icon-{{ type.icon }}"></i>
+                    {% endif %}
+                    {{ type.label }}
+                </button>
+            {% endfor %}
+        </div>
+        {{ form_widget(form.contractType, {'id': 'typeContratVal'}) }}
+        {{ form_end(form) }}
+
+        <div class="nav-btns">
+            <a class="btn btn-ghost" href="{{ path('app_cancellation_insurer', {id: cancellation.id}) }}">Retour</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('contract_type') }}
+{% endblock %}

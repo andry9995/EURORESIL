@@ -30,4 +30,24 @@ return [
         'path' => './assets/js/packs.js',
         'entrypoint' => true,
     ],
+    'subscriber' => [
+        'path' => './assets/js/cancellation/subscriber.js',
+        'entrypoint' => true,
+    ],
+    'insurer' => [
+        'path' => './assets/js/cancellation/insurer.js',
+        'entrypoint' => true,
+    ],
+    'contract_type' => [
+        'path' => './assets/js/cancellation/contract_type.js',
+        'entrypoint' => true,
+    ],
+    'contract_detail' => [
+        'path' => './assets/js/cancellation/contract_detail.js',
+        'entrypoint' => true,
+    ],
+    'preview' => [
+        'path' => './assets/js/cancellation/preview.js',
+        'entrypoint' => true,
+    ],
 ];

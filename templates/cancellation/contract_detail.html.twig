@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{% block title %}Détails du Contrat — EURORESIL{% endblock %}
+
+{% block body %}
+    <div class="wizard wrap">
+        {% include 'cancellation/partials/_stepper.html.twig' %}
+        <h2>Détails de votre contrat</h2>
+
+        <div class="legal-framework-box" style="background:#f4f6f8; padding:15px; border-radius:6px; margin-bottom:20px;">
+            <strong>{{ legal_framework.title }}</strong>
+            <p style="margin:5px 0 0; font-size:14px; color:var(--ink-soft);">{{ legal_framework.text }}</p>
+        </div>
+
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
+
+        <div class="field">
+            <label>Référence du contrat *</label>
+            {{ form_widget(form.contractReference, {'attr': {'placeholder': "N° de police, d'adhérent ou de contrat"}}) }}
+            {{ form_errors(form.contractReference) }}
+        </div>
+
+        <div class="field">
+            <label>Motif de résiliation *</label>
+            {{ form_widget(form.reason, {'id': 'cancellation_contract_reason', 'attr': {'placeholder': 'Sélectionnez ci-dessous ou saisissez votre motif'}}) }}
+            {{ form_errors(form.reason) }}
+
+            <div class="reasons-suggest" id="reasonsSuggest" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+                {% for reason in reasons %}
+                    <button type="button" class="btn btn-ghost suggest-btn" style="font-size:12px; padding:6px 10px;" data-reason="{{ reason }}">
+                        {{ reason }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="nav-btns" style="margin-top:24px;">
+            <a class="btn btn-ghost" href="{{ path('app_cancellation_contract_type', {id: cancellation.id}) }}">Retour</a>
+            <button class="btn btn-primary" type="submit">Continuer</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('contract_detail') }}
+{% endblock %}

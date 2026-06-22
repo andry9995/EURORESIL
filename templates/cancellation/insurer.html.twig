@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+{% block title %}Assureur — EURORESIL{% endblock %}
+
+{% block body %}
+    <div class="wizard wrap">
+        {% include 'cancellation/partials/_stepper.html.twig' %}
+        <h2 style="text-align:center">Choix de l'assureur</h2>
+        <p class="sub" style="text-align:center">Sélectionnez l'organisme auprès duquel le contrat a été souscrit.</p>
+
+        <input class="ins-search"
+               id="insSearch"
+               placeholder="Rechercher un assureur (ex: AXA)"
+               value="{{ cancellation.insurer.name ?? '' }}"
+               data-api-url="{{ path('app_cancellation_insurer_list') }}"
+               autocomplete="off">
+
+        <div class="ins-list" id="insList"></div>
+
+        {{ form_start(form, {'attr': {'id': 'assureurForm'}}) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form.insurer, {'id': 'assureurVal'}) }}
+        {{ form_end(form) }}
+
+        <p style="text-align:center;font-size:13.5px;color:var(--ink-soft);margin-top:18px">
+            Vous ne trouvez pas le bon organisme ? <a class="auth-link" href="#">Demander son ajout</a>
+        </p>
+
+        <div class="nav-btns">
+            <a class="btn btn-ghost" href="{{ path('app_cancellation_subscriber', {id: cancellation.id}) }}">Retour</a>
+            <button class="btn btn-primary"
+                    type="button"
+                    onclick="document.getElementById('assureurForm').submit()"
+                    id="nextBtn"
+                    {% if not cancellation.insurer %}disabled{% endif %}>
+                Continuer
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ importmap('insurer') }}
+{% endblock %}

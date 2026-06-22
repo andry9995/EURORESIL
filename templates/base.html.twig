@@ -79,8 +79,8 @@
                        class="btn-nav {% if app.request.pathinfo starts with '/dashboard' %}on{% endif %}">Tableau de
                         bord</a>
                 {% endif %}
-                <a href="{{ path('app_wizard_souscripteur') }}"
-                   class="btn-nav {% if app.request.pathinfo starts with '/wizard' %}on{% endif %}">Resiliation</a>
+                <a href="{{ path('app_cancellation_subscriber') }}"
+                   class="btn-nav {% if app.request.pathinfo starts with '/cancellation' %}on{% endif %}">Resiliation</a>
                 <a href="{{ path('app_packs') }}"
                    class="btn-nav {% if app.request.pathinfo starts with '/packs' %}on{% endif %}">Mes packs</a>
             </div>

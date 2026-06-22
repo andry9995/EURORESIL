@@ -4,5 +4,6 @@ namespace App\Enum;
 
 enum DocumentType : string
 {
-    case INVOICE = 'INVOICE';
+    case INVOICE = 'invoice';
+    case LETTER = 'letter';
 }

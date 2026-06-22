@@ -1,0 +1,26 @@
+<div class="letter-doc">
+    <div class="letter-top">
+        <span>Visualisation de la lettre</span>
+        <a class="btn-pdf" href="{{ path('app_download', {id: cancellation.document.id}) }}" target="_blank">Télécharger</a>
+    </div>
+    <div class="letter-page">
+        <div class="letter-sender">{{ cancellation.subscriberFullName }}</div>
+        <div style="font-size:11px;color:var(--ink-soft);margin-bottom:16px">{{ subscriber.address ?? '' }}, {{ subscriber.zip_code ?? '' }} {{ subscriber.city ?? '' }}</div>
+        <div class="letter-recipient"><strong>{{ cancellation.insurer.name }}</strong><br><span style="font-size:11px">Service resiliation</span></div>
+        <div class="letter-date">Le {{ "now"|date("d/m/Y") }}</div>
+        <div class="letter-title">LETTRE RECOMMANDEE ELECTRONIQUE DE RESILIATION</div>
+        Madame, Monsieur,<br><br>
+        Par la presente lettre recommandee electronique, nous vous informons que nous sommes mandates par
+        <strong>{{ cancellation.subscriberFullName }}</strong> afin de resilier le contrat suivant :<br><br>
+        <ul style="margin:0 0 12px 16px;padding:0">
+            <li>Reference : <span class="ph">{{ cancellation.contractReference }}</span></li>
+            <li>Type : <span class="ph">{{ cancellation.contractType ? cancellation.contractType.label() : '' }}</span></li>
+            <li>Motif : <span class="ph">{{ cancellation.reason }}</span></li>
+        </ul>
+        Nous vous prions d'agreer, Madame, Monsieur, l'expression de nos salutations distinguees.<br><br>
+        {% if cancellation.extraText %}<div style="font-style:italic;font-size:11px;color:var(--ink-soft)">{{ cancellation.extraText }}</div>{% endif %}
+        <div style="text-align:center;font-style:italic;font-size:11px;color:var(--ink-soft);margin-top:20px;border-top:1px solid var(--line);padding-top:10px">
+            (Courrier envoye numeriquement via le service Letreco)
+        </div>
+    </div>
+</div>

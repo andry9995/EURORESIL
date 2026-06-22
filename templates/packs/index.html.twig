@@ -98,7 +98,6 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const pricingUrl = '{{ path('app_packs_pricing') }}';
         const pricingGrid = {{ pricingGrid|json_encode|raw }};
     </script>
     {{ importmap('packs') }}

@@ -24,7 +24,7 @@ class CreditService
         private readonly EntityManagerInterface $em,
         private readonly SherlockPayService     $sherlockPayService,
         private readonly PDFService             $PDFService,
-        private ParameterBagInterface $params,
+        private readonly ParameterBagInterface  $params,
     )
     {
     }

@@ -17,7 +17,7 @@
   {% elseif resiliation.status in ['sending','signing'] %}
     <div class="det-banner wait" style="margin-bottom:20px">Envoi en cours vers {{ resiliation.assureurNom }}.</div>
   {% elseif resiliation.status == 'draft' %}
-    <div class="det-banner wait" style="margin-bottom:20px">Brouillon — envoi non encore effectue. <a href="{{ path('app_wizard_souscripteur', {id: resiliation.id}) }}" class="auth-link">Continuer</a></div>
+    <div class="det-banner wait" style="margin-bottom:20px">Brouillon — envoi non encore effectue. <a href="{{ path('app_cancellation_subscriber', {id: resiliation.id}) }}" class="auth-link">Continuer</a></div>
   {% endif %}
 
   <div class="recap-grid">

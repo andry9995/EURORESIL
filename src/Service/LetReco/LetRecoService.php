@@ -39,7 +39,7 @@ readonly class LetRecoService
             "attachments" => $this->makeAttachments($params)
         ];
 
-        return $this->letRecoApi->postRecord($payload);
+        return $this->letRecoApi->postRecord($payload, $params['letRecoUserId'], $params['letRecoPassword']);
     }
 
     /**
@@ -48,7 +48,7 @@ readonly class LetRecoService
      */
     private function makeSubject(array $params): string
     {
-        $subject = sprintf("Envoi de la LRAR pour le dossier n° %s", $params['id']);
+        $subject = $params['subject'];
 
         if (($_ENV['APP_ENV'] ?? 'dev') !== 'prod') {
             return sprintf("TEST - %s", $subject);
@@ -99,10 +99,10 @@ readonly class LetRecoService
     {
         $attachments = [];
 
-        foreach ($params["files"] as $path) {
+        foreach ($params["files"] as $file) {
             $attachments[] = [
-                'filename' => pathinfo($path, PATHINFO_BASENAME),
-                'data' => base64_encode(file_get_contents($path))
+                'filename' => pathinfo($file['filename'], PATHINFO_BASENAME),
+                'data' => base64_encode(file_get_contents($file['path']))
             ];
         }
 
@@ -125,7 +125,6 @@ readonly class LetRecoService
 
     /**
      * @param string $reference
-     * @param string|null $type
      * @return array
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
@@ -133,9 +132,9 @@ readonly class LetRecoService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function downloadProof(string $reference, ?string $type = 'all'): array
+    public function depositProof(string $reference): array
     {
-        return $this->letRecoApi->downloadProof($type, $reference);
+        return $this->letRecoApi->depositProof($reference);
     }
 
     /**

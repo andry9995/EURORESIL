@@ -1,0 +1,48 @@
+<div class="rsec">
+    <div class="rsec-head">
+        <h4>Souscripteur</h4>
+        {% if not isReadOnly %}
+            <a class="btn-mod" href="{{ path('app_cancellation_subscriber', {id: cancellation.id}) }}">Modifier</a>
+        {% endif %}
+    </div>
+
+    <div class="rrow">
+        <span class="rl">Type</span>
+        <span class="rv" style="font-weight: 600;">
+                        {{ (subscriber.category ?? 'particulier') == 'professionnel' ? 'Professionnel' : 'Particulier' }}
+                      </span>
+    </div>
+
+    {% if (subscriber.category ?? '') == 'professionnel' %}
+        <div class="rrow"><span class="rl">Societe</span><span class="rv">{{ subscriber.company ?? '-' }}</span></div>
+        <div class="rrow"><span class="rl">SIRET</span><span class="rv">{{ subscriber.siret ?? '-' }}</span></div>
+    {% endif %}
+
+    <div class="rrow">
+        <span class="rl">Nom</span><span class="rv">{{ cancellation.subscriberFullName }}</span>
+    </div>
+
+    {% if subscriber.birth_name is defined and subscriber.birth_name is not empty %}
+        <div class="rrow"><span class="rl">Nom de naissance</span><span class="rv">{{ subscriber.birth_name }}</span>
+        </div>
+    {% endif %}
+
+    <div class="rrow">
+        <span class="rl">Adresse</span>
+        <span class="rv">
+                            {{ subscriber.address ?? '' }}
+            {% if subscriber.address_complement is defined and subscriber.address_complement is not empty %}
+                <br><small style="color: var(--ink-soft);">{{ subscriber.address_complement }}</small>
+            {% endif %}
+                        <br>{{ subscriber.zip_code ?? '' }} {{ subscriber.city ?? '' }} ({{ subscriber.country ?? 'France' }})
+                      </span>
+    </div>
+
+    <div class="rrow"><span class="rl">Email</span><span class="rv">{{ subscriber.email ?? '' }}</span></div>
+
+    {% if subscriber.client_reference is defined and subscriber.client_reference is not empty %}
+        <div class="rrow"><span class="rl">Ref. Interne</span><span class="rv"
+                                                                    style="font-family: monospace;">{{ subscriber.client_reference }}</span>
+        </div>
+    {% endif %}
+</div>

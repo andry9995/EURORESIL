@@ -1709,7 +1709,9 @@ tr.row:hover {
     transition: .2s
 }
 
-.ins-item:hover, .ctype-item:hover {
+.ins-item:hover,
+.ctype-item:hover,
+.ctype-item.active {
     background: var(--blue-deep);
     transform: translateY(-2px)
 }
