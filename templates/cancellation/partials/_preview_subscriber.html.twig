@@ -1,7 +1,7 @@
 <div class="rsec">
     <div class="rsec-head">
         <h4>Souscripteur</h4>
-        {% if not isReadOnly %}
+        {% if isReadOnly is not defined %}
             <a class="btn-mod" href="{{ path('app_cancellation_subscriber', {id: cancellation.id}) }}">Modifier</a>
         {% endif %}
     </div>

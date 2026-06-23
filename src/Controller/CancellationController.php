@@ -282,7 +282,10 @@ final class CancellationController extends AbstractController
         $user = $this->getUser();
         $this->creditService->deductCredit($user);
 
-        $cancellation->setStatus(CancellationStatus::SENDING);
+        $cancellation
+            ->setStatus(CancellationStatus::SENDING)
+            ->setLetRecoId($response['result']['reference'])
+        ;
         $this->em->persist($cancellation);
 
         $this->em->flush();

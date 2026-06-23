@@ -67,7 +67,6 @@ readonly class RegistrationService
         $response = $this->letRecoService->createUser([
             'uid' => $user->getId(),
             'email' => $user->getEmail(),
-            'firstName' => $user->getRaisonSociale(),
             'company' => $user->getRaisonSociale(),
             'password' => $password,
         ]);

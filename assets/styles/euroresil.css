@@ -893,7 +893,9 @@ tr.row:hover {
     gap: 6px
 }
 
-.tag.sent {
+.tag.sent,
+.tag.deposit
+{
     background: var(--blue-soft);
     color: var(--blue-deep)
 }
@@ -914,7 +916,9 @@ tr.row:hover {
 }
 
 .tag.refused,
-.tag.failed {
+.tag.failed,
+.tag.refusal
+{
     background: var(--red-soft);
     color: var(--red-deep)
 }

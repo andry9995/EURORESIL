@@ -37,7 +37,7 @@
                             {% for proof in cancellation.cancellationProofs %}
                                 <tr>
                                     <td>{{ proof.createdAt|date('d/m/Y H:i') }}</td>
-                                    <td><span class="tag {{ proof.type == constant('App\\Enum\\CancellationProofType::ACCEPTANCE') ? 'recu' : 'sent' }}"><i></i>{{ proof.type.label }}</span></td>
+                                    <td><span class="tag {{ proof.type.value }}"><i></i>{{ proof.type.label }}</span></td>
                                     <td>
                                         {% if proof.document %}
                                             <a href="{{ path('app_download', {id: proof.document.id}) }}" class="btn-pdf" target="_blank">Télécharger</a>

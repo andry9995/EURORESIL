@@ -4,12 +4,13 @@
     <div class="dash wrap">
         <div class="dash-head">
             <div><h2>Tableau de bord</h2>
-                <p>Bonjour {{ user.raisonSociale ?? user.email }} — voici vos résiliations.</p></div>
+                <p>Bonjour {{ user.raisonSociale ?? user.email }} — gérez vos résiliations en toute simplicité.</p></div>
             <a class="btn btn-primary" href="{{ path('app_cancellation_subscriber') }}">+ Nouvelle resiliation</a>
         </div>
         <div class="credit-bar">
-            <div><span class="ic">💳</span> <strong style="font-size:20px">{{ user.credits }}</strong> crédits
-                disponibles
+            <div>
+                <strong style="font-size:20px">{{ user.credits }}</strong>
+                crédits disponibles
             </div>
             <a class="btn btn-amber" href="{{ path('app_packs') }}">Acheter un pack</a>
         </div>
@@ -32,7 +33,7 @@
             </div>
         </div>
         <div class="panel">
-            <div class="panel-top"><h3>Lettres recommandées</h3></div>
+            <div class="panel-top"><h3>Vos résiliations</h3></div>
             <table>
                 <thead>
                 <tr>
@@ -41,7 +42,7 @@
                     <th>Assureur</th>
                     <th>Statut</th>
                     <th>Date</th>
-                    <th>Actions</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -58,7 +59,7 @@
                             {% if cancellation.status == constant('App\\Enum\\CancellationStatus::DRAFT')  %}
                                 <a class="btn-pdf" href="{{ path('app_cancellation_subscriber', {id: cancellation.id}) }}">Continuer</a>
                             {% else %}
-                                <a class="btn-pdf" href="{{ path('app_cancellation_detail', {id: cancellation.id}) }}">Détails</a>
+                                <a class="btn-pdf" href="{{ path('app_cancellation_detail', {id: cancellation.id}) }}">Voir</a>
                             {% endif %}
                         </td>
                     </tr>

@@ -6,26 +6,26 @@
     <div class="letter-page">
         <div class="letter-sender">{{ subscriber.company }}</div>
         <div style="font-size:11px;color:var(--ink-soft);margin-bottom:16px">
-            Siret: {{ subscriber.siret }} <br>
-            Nom: {{ cancellation.subscriberFullName }}<br>
-            Adresse: {{ subscriber.address ?? '' }}, {{ subscriber.zip_code ?? '' }} {{ subscriber.city ?? '' }}<br>
-            Ref. client : {{ subscriber.client_reference }}
+            <strong>Siret :</strong> {{ subscriber.siret }} <br>
+            <strong>Nom :</strong> {{ cancellation.subscriberFullName }}<br>
+            <strong>Adresse :</strong> {{ subscriber.address ?? '' }}, {{ subscriber.zip_code ?? '' }} {{ subscriber.city ?? '' }}<br>
+            <strong>Ref. client :</strong> {{ subscriber.client_reference }}
         </div>
         <div class="letter-recipient"><strong>{{ cancellation.insurer.name }}</strong><br><span style="font-size:11px">Service resiliation</span></div>
         <div class="letter-date">Le {{ "now"|date("d/m/Y") }}</div>
-        <div class="letter-title">LETTRE RECOMMANDEE ELECTRONIQUE DE RESILIATION</div>
+        <div class="letter-title">LETTRE RECOMMANDÉE ÉLECTRONIQUE DE RÉSILIATION</div>
         Madame, Monsieur,<br><br>
         Par la presente lettre recommandee electronique, nous vous informons que nous sommes mandatés par
         <strong>{{ cancellation.subscriberFullName }}</strong> afin de resilier le contrat suivant :<br><br>
         <ul style="margin:0 0 12px 16px;padding:0">
-            <li>Reference : <span class="ph">{{ cancellation.contractReference }}</span></li>
+            <li>Référence : <span class="ph">{{ cancellation.contractReference }}</span></li>
             <li>Type : <span class="ph">{{ cancellation.contractType ? cancellation.contractType.label() : '' }}</span></li>
             <li>Motif : <span class="ph">{{ cancellation.reason }}</span></li>
         </ul>
-        Nous vous prions d'agreer, Madame, Monsieur, l'expression de nos salutations distinguees.<br><br>
+        Nous vous prions d’agréer, Madame, Monsieur, l’expression de nos salutations distinguées.<br><br>
         {% if cancellation.extraText %}<div style="font-style:italic;font-size:11px;color:var(--ink-soft)">{{ cancellation.extraText }}</div>{% endif %}
         <div style="text-align:center;font-style:italic;font-size:11px;color:var(--ink-soft);margin-top:20px;border-top:1px solid var(--line);padding-top:10px">
-            (Courrier envoye numeriquement via le service Letreco)
+            (Courrier envoyé numériquement via le service Letreco)
         </div>
     </div>
 </div>

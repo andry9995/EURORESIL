@@ -1,12 +1,12 @@
 <div class="rsec">
     <div class="rsec-head">
         <h4>Le contrat</h4>
-        {% if not isReadOnly %}
+        {% if isReadOnly is not defined %}
             <a class="btn-mod" href="{{ path('app_cancellation_contract_type', {id: cancellation.id}) }}">Modifier</a>
         {% endif %}
     </div>
     <div class="rrow"><span class="rl">Assureur</span><span class="rv">{{ cancellation.insurer.name }}</span></div>
     <div class="rrow"><span class="rl">Type</span><span class="rv">{{ cancellation.contractType ? cancellation.contractType.label() : '' }}</span></div>
-    <div class="rrow"><span class="rl">Reference</span><span class="rv">{{ cancellation.contractReference }}</span></div>
+    <div class="rrow"><span class="rl">Référence</span><span class="rv">{{ cancellation.contractReference }}</span></div>
     <div class="rrow"><span class="rl">Motif</span><span class="rv">{{ cancellation.reason }}</span></div>
 </div>

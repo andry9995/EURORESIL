@@ -4,7 +4,9 @@
     <div class="pricing wrap">
         <div class="head">
             <h2>Des packs <span style="color:var(--blue)">degressifs</span></h2>
-            <p>Plus vous envoyez, moins chaque recommandé vous coûte. Sans abonnement — vous payez a l'usage.</p>
+            <p>
+                Plus vous envoyez de recommandés, moins chaque envoi vous coûte. Sans abonnement — vous payez uniquement à l’usage.
+            </p>
         </div>
         <div class="cred-banner">
             Votre solde : <strong>{{ app.user.credits }}</strong> recommandés disponibles
@@ -30,7 +32,7 @@
                 </div>
                 <div class="o save">
                     <div class="v" id="saveVal">50 €</div>
-                    <div class="k">d'economie</div>
+                    <div class="k">d’économie</div>
                 </div>
             </div>
             <form method="post" action="{{ path('app_packs_purchase') }}" id="buyForm">
