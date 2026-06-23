@@ -42,6 +42,7 @@ final class CancellationController extends AbstractController
     }
 
     #[Route('/subscriber/{id?}', name: 'app_cancellation_subscriber')]
+    #[IsGranted('CAN_CANCELLATION', subject: 'cancellation')]
     public function subscriber(Request $request, ?Cancellation $cancellation = null): Response
     {
         /**
@@ -72,6 +73,7 @@ final class CancellationController extends AbstractController
     }
 
     #[Route('/insurer/{id}', name: 'app_cancellation_insurer')]
+    #[IsGranted('CAN_CANCELLATION', subject: 'cancellation')]
     public function insurer(Request $request, Cancellation $cancellation): Response
     {
         $form = $this->createForm(CancellationInsurerType::class, $cancellation);
@@ -118,6 +120,7 @@ final class CancellationController extends AbstractController
     }
 
     #[Route('/contract-type/{id}', name: 'app_cancellation_contract_type')]
+    #[IsGranted('CAN_CANCELLATION', subject: 'cancellation')]
     public function contractType(Request $request, Cancellation $cancellation): Response
     {
         $form = $this->createForm(CancellationContractType::class, $cancellation);
@@ -138,6 +141,7 @@ final class CancellationController extends AbstractController
     }
 
     #[Route('/contract-detail/{id}', name: 'app_cancellation_contract_detail')]
+    #[IsGranted('CAN_CANCELLATION', subject: 'cancellation')]
     public function contractDetail(Request $request, Cancellation $cancellation): Response
     {
         $form = $this->createForm(CancellationContractDetailType::class, $cancellation);
@@ -211,6 +215,7 @@ final class CancellationController extends AbstractController
     }
 
     #[Route('/preview/{id}', name: 'app_cancellation_preview')]
+    #[IsGranted('CAN_CANCELLATION', subject: 'cancellation')]
     public function preview(Cancellation $cancellation): Response
     {
         $subscriber = $cancellation->getSubscriber() ?? [];
@@ -231,6 +236,7 @@ final class CancellationController extends AbstractController
      * @throws ClientExceptionInterface
      */
     #[Route('/send/{id}', name: 'app_cancellation_send', methods: ['POST'])]
+    #[IsGranted('CAN_CANCELLATION', subject: 'cancellation')]
     public function send(Request $request, Cancellation $cancellation): JsonResponse
     {
         if (!$this->isCsrfTokenValid('cancellation_send', $request->headers->get('X-CSRF-TOKEN'))) {
@@ -296,6 +302,7 @@ final class CancellationController extends AbstractController
      * @throws ClientExceptionInterface
      */
     #[Route('/detail/{id}', name: 'app_cancellation_detail')]
+    #[IsGranted('CAN_VIEW_CANCELLATION', subject: 'cancellation')]
     public function detail(Cancellation $cancellation): Response
     {
         $this->cancellationService->getProofs($cancellation);

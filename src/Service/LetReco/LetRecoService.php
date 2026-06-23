@@ -182,7 +182,7 @@ readonly class LetRecoService
 
         if (!$responseCheckUser['status']) {
             if($responseCheckUser['code'] === 404){
-                return $this->letRecoApi->createUser([
+                $response = $this->letRecoApi->createUser([
                     'uid' => $params['uid'],
                     'email' => $params['email'],
                     'domain' => 'bscompp',
@@ -194,12 +194,20 @@ readonly class LetRecoService
 //            'groups' => ["bscompp_users"],
                     'password' => $params['password'],
                 ]);
+
+                if($response['status']) {
+                    return $this->letRecoApi->addUserToGroup($params['uid']);
+                }
             }
 
             return $responseCheckUser;
         }
 
-        $this->letRecoApi->changePassword($params['email'], $params['password']);
+        $response = $this->letRecoApi->changePassword($params['email'], $params['password']);
+
+        if($response['status']) {
+            $this->letRecoApi->addUserToGroup($responseCheckUser['result']['uid']);
+        }
 
         return $responseCheckUser;
     }

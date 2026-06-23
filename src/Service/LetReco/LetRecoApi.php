@@ -15,13 +15,17 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class LetRecoApi extends AbstractApiClient
 {
     public function __construct(
-        HttpClientInterface $httpClient,
-        EntityManagerInterface $em,
-        #[Autowire('%env(LETRECO_BASE_URL)%')] string $baseUrl,
-        #[Autowire('%env(LETRECO_AUTH_IDENT)%')] string $authIdent,
-        #[Autowire('%env(LETRECO_AUTH_PASSWORD)%')] string $authPassword,
-        #[Autowire('%env(LETRECO_AUTH_DOMAIN)%')] string $authDomain,
+        HttpClientInterface                                                       $httpClient,
+        EntityManagerInterface                                                    $em,
+        #[Autowire('%env(LETRECO_BASE_URL)%')] string                             $baseUrl,
+        #[Autowire('%env(LETRECO_AUTH_IDENT)%')] string                           $authIdent,
+        #[Autowire('%env(LETRECO_AUTH_PASSWORD)%')] string                        $authPassword,
+        #[Autowire('%env(LETRECO_AUTH_DOMAIN)%')] private readonly string         $authDomain,
 //        #[Autowire('%env(LETRECO_ACTING_AS)%')] string $actingAs,
+        #[Autowire('%env(LETRECO_AUTH_IDENT_SUPER)%')] private readonly string    $authIdentSuper,
+        #[Autowire('%env(LETRECO_AUTH_PASSWORD_SUPER)%')] private readonly string $authPasswordSuper,
+        #[Autowire('%env(LETRECO_AUTH_DOMAIN_SUPER)%')] private readonly string   $authDomainSuper,
+        #[Autowire('%env(LETRECO_USER_GROUP)%')] private readonly string          $userGroup,
     )
     {
         parent::__construct($em);
@@ -200,7 +204,32 @@ class LetRecoApi extends AbstractApiClient
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function getUserByEmail(string $email): array {
+    public function addUserToGroup(string $uid): array
+    {
+        return $this->call('PUT', sprintf('/kwp-user/api/v2/group/byName/%s/members', $this->userGroup), [
+            'json' => [
+                'uid' => $uid,
+                'domain' => $this->authDomain,
+            ],
+            'headers' => [
+                'X-OTC-Auth-Ident' => base64_encode($this->authIdentSuper),
+                'X-OTC-Auth-Password' => base64_encode($this->authPasswordSuper),
+                'X-OTC-Auth-Domain' => base64_encode($this->authDomainSuper),
+            ]
+        ]);
+    }
+
+    /**
+     * @param string $email
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function getUserByEmail(string $email): array
+    {
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/users/userByEmail/%s', $email),
@@ -217,7 +246,8 @@ class LetRecoApi extends AbstractApiClient
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function changePassword(string $email, string $password): array {
+    public function changePassword(string $email, string $password): array
+    {
         return $this->call(
             'POST',
             sprintf('/kwp-user/api/v2/users/userByEmail/%s/password', $email),
