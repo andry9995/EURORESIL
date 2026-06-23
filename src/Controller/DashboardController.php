@@ -33,7 +33,7 @@ class DashboardController extends AbstractController
 
         $stats = [
             'total' => count($cancellations),
-            'sent' => count(array_filter($cancellations, fn($r) => $r->getStatus() === CancellationStatus::SENT)),
+            'sent' => count(array_filter($cancellations, fn($r) => in_array($r->getStatus(), [CancellationStatus::SENT, CancellationStatus::ACCEPTED, CancellationStatus::REFUSED]))),
             'draft' => count(array_filter($cancellations, fn($r) => in_array($r->getStatus(), [CancellationStatus::DRAFT, CancellationStatus::SENDING]))),
             'credits' => $user->getCredits(),
         ];
@@ -42,20 +42,6 @@ class DashboardController extends AbstractController
             'cancellations' => $cancellations,
             'stats' => $stats,
             'user' => $user,
-        ]);
-    }
-
-    #[Route('/detail/{id}', name: 'app_dashboard_detail')]
-    public function detail(string $id): Response
-    {
-        $resiliation = $this->em->find(Resiliation::class, $id);
-
-        if (!$resiliation || $resiliation->getUser()->getId() !== $this->getUser()->getId()) {
-            throw $this->createNotFoundException('Resiliation introuvable.');
-        }
-
-        return $this->render('dashboard/detail.html.twig', [
-            'resiliation' => $resiliation,
         ]);
     }
 }

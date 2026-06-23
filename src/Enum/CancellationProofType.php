@@ -5,17 +5,15 @@ namespace App\Enum;
 enum CancellationProofType: string
 {
     case DEPOSIT = 'deposit';
-    case RECEIPT = 'receipt';
-    case WITHDRAWAL = 'withdrawal';
-    case NEGLIGENCE = 'negligence';
+    case ACCEPTANCE = 'acceptance';
+    case REFUSAL = 'refusal';
 
     public function label(): string
     {
         return match ($this) {
             self::DEPOSIT => 'Dépôt',
-            self::RECEIPT => 'Réception',
-            self::WITHDRAWAL => 'Retrait',
-            self::NEGLIGENCE => 'Négligence',
+            self::ACCEPTANCE => 'Acceptation',
+            self::REFUSAL => 'Refus',
         };
     }
 }

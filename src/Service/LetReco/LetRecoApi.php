@@ -136,6 +136,46 @@ class LetRecoApi extends AbstractApiClient
     }
 
     /**
+     * @param string $reference
+     * @param string $email
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function acceptanceProof(string $reference, string $email): array
+    {
+        return $this->call(
+            'GET',
+            sprintf('/kwp-user/api/v2/proof/acceptance/%s/%s', $reference, $email),
+            [],
+            true
+        );
+    }
+
+    /**
+     * @param string $reference
+     * @param string $email
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function refusalProof(string $reference, string $email): array
+    {
+        return $this->call(
+            'GET',
+            sprintf('/kwp-user/api/v2/proof/refusal/%s/%s', $reference, $email),
+            [],
+            true
+        );
+    }
+
+    /**
      * @param array $payload
      * @return array
      * @throws ClientExceptionInterface

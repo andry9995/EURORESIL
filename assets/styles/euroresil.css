@@ -14,6 +14,9 @@
     --shadow: 0 24px 60px -28px rgba(18, 24, 43, .4);
     --shadow-sm: 0 10px 30px -18px rgba(18, 24, 43, .5);
     --radius: 20px;
+    --red-soft: #fdeaea;
+    --red-deep: #a61b1b;
+    --red: #e53935;
 }
 
 * {
@@ -895,12 +898,12 @@ tr.row:hover {
     color: var(--blue-deep)
 }
 
-.tag.wait {
+.tag.sending {
     background: var(--amber-soft);
     color: var(--amber-deep)
 }
 
-.tag.recu {
+.tag.accepted {
     background: #DFF3E6;
     color: #1c7a45
 }
@@ -908,6 +911,12 @@ tr.row:hover {
 .tag.draft {
     background: #EDE9E4;
     color: #6B655B
+}
+
+.tag.refused,
+.tag.failed {
+    background: var(--red-soft);
+    color: var(--red-deep)
 }
 
 .tag i {
@@ -1772,6 +1781,12 @@ tr.row:hover {
     background: var(--amber-soft);
     color: var(--amber-deep);
     border: 1px solid var(--amber)
+}
+
+.det-banner.refused {
+    background: var(--red-soft);
+    color: var(--red-deep);
+    border: 1px solid var(--red)
 }
 
 .preuves-tbl {

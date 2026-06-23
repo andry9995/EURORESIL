@@ -138,6 +138,36 @@ readonly class LetRecoService
     }
 
     /**
+     * @param string $reference
+     * @param string $email
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function acceptanceProof(string $reference, string $email): array
+    {
+        return $this->letRecoApi->acceptanceProof($reference, $email);
+    }
+
+    /**
+     * @param string $reference
+     * @param string $email
+     * @return array
+     * @throws ClientExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function refusalProof(string $reference, string $email): array
+    {
+        return $this->letRecoApi->refusalProof($reference, $email);
+    }
+
+    /**
      * @param array $params
      * @return array
      * @throws ClientExceptionInterface

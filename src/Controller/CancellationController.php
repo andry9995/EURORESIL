@@ -276,19 +276,30 @@ final class CancellationController extends AbstractController
         $user = $this->getUser();
         $this->creditService->deductCredit($user);
 
-        $cancellation->setStatus(CancellationStatus::SENT);
+        $cancellation->setStatus(CancellationStatus::SENDING);
         $this->em->persist($cancellation);
 
         $this->em->flush();
+
+        $this->cancellationService->getProofs($cancellation);
 
         return $this->json([
             'redirect' => $this->generateUrl('app_home')
         ]);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     #[Route('/detail/{id}', name: 'app_cancellation_detail')]
     public function detail(Cancellation $cancellation): Response
     {
+        $this->cancellationService->getProofs($cancellation);
+
         return $this->render('cancellation/detail.html.twig', [
             'cancellation' => $cancellation,
             'isReadOnly' => true,

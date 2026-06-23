@@ -87,6 +87,10 @@ abstract class AbstractApiClient
                 $payload = json_decode($payload, true);
             }
 
+            if($asBinary){
+                $result = [];
+            }
+
             $log = new ApiLog();
             $log->setApiName($this->getApiName())
                 ->setMethod($method)

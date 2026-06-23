@@ -10,12 +10,14 @@
             </div>
         </div>
 
-        {% if cancellation.status == constant('App\\Enum\\CancellationStatus::RECEIVED') %}
-            <div class="det-banner ok" style="margin-bottom:20px">Lettre receptionnee par {{ cancellation.assureurNom }} — Les preuves sont disponibles ci-dessous.</div>
-        {% elseif cancellation.status == 'sent' %}
+        {% if cancellation.status == constant('App\\Enum\\CancellationStatus::ACCEPTED') %}
+            <div class="det-banner ok" style="margin-bottom:20px">Lettre acceptée par {{ cancellation.insurer.name }} — Les preuves sont disponibles ci-dessous.</div>
+        {% elseif cancellation.status == constant('App\\Enum\\CancellationStatus::REFUSED') %}
+            <div class="det-banner refused" style="margin-bottom:20px">Lettre réfusée par {{ cancellation.insurer.name }} — Les preuves sont disponibles ci-dessous.</div>
+        {% elseif cancellation.status == constant('App\\Enum\\CancellationStatus::SENT') %}
             <div class="det-banner sent" style="margin-bottom:20px">Lettre envoyee — en attente d'accuse de reception.</div>
-        {% elseif cancellation.status in [constant('App\\Enum\\CancellationStatus::SENDING'),constant('App\\Enum\\CancellationStatus::SIGNING')] %}
-            <div class="det-banner wait" style="margin-bottom:20px">Envoi en cours vers {{ cancellation.assureurNom }}.</div>
+        {% elseif cancellation.status in [constant('App\\Enum\\CancellationStatus::SENDING')] %}
+            <div class="det-banner wait" style="margin-bottom:20px">Envoi en cours vers {{ cancellation.insurer.name }}.</div>
         {% elseif cancellation.status == constant('App\\Enum\\CancellationStatus::DRAFT') %}
             <div class="det-banner wait" style="margin-bottom:20px">Brouillon — envoi non encore effectue. <a href="{{ path('app_cancellation_subscriber', {id: cancellation.id}) }}" class="auth-link">Continuer</a></div>
         {% endif %}
@@ -24,31 +26,31 @@
             <div class="recap-col">
                 {% include 'cancellation/partials/_preview_subscriber.html.twig' %}
                 {% include 'cancellation/partials/_preview_contract.html.twig' %}
-{#                <div class="rsec">#}
-{#                    <div class="rsec-head"><h4>Les avis ou accuses</h4></div>#}
-{#                    {% if cancellation.preuves is empty %}#}
-{#                        <p class="det-empty">Aucun avis pour le moment. Ils apparaitront apres l'envoi de la lettre recommandee.</p>#}
-{#                    {% else %}#}
-{#                        <table class="preuves-tbl">#}
-{#                            <thead><tr><th>Date</th><th>Type</th><th>Preuve</th></tr></thead>#}
-{#                            <tbody>#}
-{#                            {% for preuve in cancellation.preuves %}#}
-{#                                <tr>#}
-{#                                    <td>{{ preuve.eventDate|date('d/m/Y H:i') }}</td>#}
-{#                                    <td><span class="tag {{ preuve.type == 'reception' ? 'recu' : 'sent' }}"><i></i>{{ preuve.typeLabel }}</span></td>#}
-{#                                    <td>#}
-{#                                        {% if preuve.proofPdfPath %}#}
-{#                                            <a href="/proof/{{ preuve.id }}" class="btn-pdf" target="_blank">Voir</a>#}
-{#                                        {% else %}#}
-{#                                            <span style="font-size:12px;color:var(--ink-soft)">Traitement...</span>#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                </tr>#}
-{#                            {% endfor %}#}
-{#                            </tbody>#}
-{#                        </table>#}
-{#                    {% endif %}#}
-{#                </div>#}
+                <div class="rsec">
+                    <div class="rsec-head"><h4>Les avis ou accusés</h4></div>
+                    {% if cancellation.cancellationProofs is empty %}
+                        <p class="det-empty">Aucun avis pour le moment. Ils apparaitront apres l'envoi de la lettre recommandee.</p>
+                    {% else %}
+                        <table class="preuves-tbl">
+                            <thead><tr><th>Date</th><th>Type</th><th>Preuve</th></tr></thead>
+                            <tbody>
+                            {% for proof in cancellation.cancellationProofs %}
+                                <tr>
+                                    <td>{{ proof.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td><span class="tag {{ proof.type == constant('App\\Enum\\CancellationProofType::ACCEPTANCE') ? 'recu' : 'sent' }}"><i></i>{{ proof.type.label }}</span></td>
+                                    <td>
+                                        {% if proof.document %}
+                                            <a href="{{ path('app_download', {id: proof.document.id}) }}" class="btn-pdf" target="_blank">Télécharger</a>
+                                        {% else %}
+                                            <span style="font-size:12px;color:var(--ink-soft)">Traitement...</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
             </div>
             <div class="letter-col">
                 {% include 'cancellation/partials/_preview_letter.html.twig' %}
