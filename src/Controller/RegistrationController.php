@@ -114,7 +114,7 @@ class RegistrationController extends AbstractController
             if ($user->getVerificationCode() !== $code) {
                 $this->addFlash('error', 'Code incorrect. Veuillez reessayer.');
             } elseif ($user->getVerificationCodeExpiresAt() < new \DateTimeImmutable()) {
-                $this->addFlash('error', 'Code expire. Demandez un nouveau code.');
+                $this->addFlash('error', 'Le code a expiré. Demandez un nouveau code.');
             } else {
                 $response = $this->registrationService->createLetRecoAccount($user);
 

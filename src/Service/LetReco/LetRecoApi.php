@@ -18,8 +18,8 @@ class LetRecoApi extends AbstractApiClient
         HttpClientInterface                                                       $httpClient,
         EntityManagerInterface                                                    $em,
         #[Autowire('%env(LETRECO_BASE_URL)%')] string                             $baseUrl,
-        #[Autowire('%env(LETRECO_AUTH_IDENT)%')] string                           $authIdent,
-        #[Autowire('%env(LETRECO_AUTH_PASSWORD)%')] string                        $authPassword,
+        #[Autowire('%env(LETRECO_AUTH_IDENT)%')] private readonly string          $authIdent,
+        #[Autowire('%env(LETRECO_AUTH_PASSWORD)%')] private readonly string       $authPassword,
         #[Autowire('%env(LETRECO_AUTH_DOMAIN)%')] private readonly string         $authDomain,
 //        #[Autowire('%env(LETRECO_ACTING_AS)%')] string $actingAs,
         #[Autowire('%env(LETRECO_AUTH_IDENT_SUPER)%')] private readonly string    $authIdentSuper,
@@ -35,9 +35,9 @@ class LetRecoApi extends AbstractApiClient
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'X-OTC-Auth-Ident' => base64_encode($authIdent),
-                'X-OTC-Auth-Password' => base64_encode($authPassword),
-                'X-OTC-Auth-Domain' => base64_encode($authDomain),
+//                'X-OTC-Auth-Ident' => base64_encode($authIdent),
+//                'X-OTC-Auth-Password' => base64_encode($authPassword),
+//                'X-OTC-Auth-Domain' => base64_encode($authDomain),
 //                'X-OTC-ActingAs-Domain' => base64_encode($actingAs),
             ]
         ]);
@@ -61,7 +61,13 @@ class LetRecoApi extends AbstractApiClient
      */
     public function getVersion(): array
     {
-        return $this->call('GET', '/kwp-user/api/v2/version');
+        return $this->call('GET', '/kwp-user/api/v2/version', [
+            'headers' => [
+                'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+            ]
+        ]);
     }
 
     /**
@@ -82,6 +88,7 @@ class LetRecoApi extends AbstractApiClient
             'headers' => [
                 'X-OTC-Auth-Ident' => base64_encode($customIdent),
                 'X-OTC-Auth-Password' => base64_encode($customPassword),
+                'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
             ]
         ]);
     }
@@ -100,6 +107,13 @@ class LetRecoApi extends AbstractApiClient
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/records/recordByReference/%s', $reference),
+            [
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
+            ]
         );
     }
 
@@ -117,6 +131,13 @@ class LetRecoApi extends AbstractApiClient
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/proof/info/%s', $reference),
+            [
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
+            ]
         );
     }
 
@@ -134,7 +155,13 @@ class LetRecoApi extends AbstractApiClient
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/proof/deposit/%s', $reference),
-            [],
+            [
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
+            ],
             true
         );
     }
@@ -154,7 +181,13 @@ class LetRecoApi extends AbstractApiClient
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/proof/acceptance/%s/%s', $reference, $email),
-            [],
+            [
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
+            ],
             true
         );
     }
@@ -174,7 +207,13 @@ class LetRecoApi extends AbstractApiClient
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/proof/refusal/%s/%s', $reference, $email),
-            [],
+            [
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
+            ],
             true
         );
     }
@@ -192,11 +231,16 @@ class LetRecoApi extends AbstractApiClient
     {
         return $this->call('POST', '/kwp-user/api/v2/users/createUser', [
             'json' => $payload,
+            'headers' => [
+                'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+            ]
         ]);
     }
 
     /**
-     * @param string $email
+     * @param string $uid
      * @return array
      * @throws ClientExceptionInterface
      * @throws DecodingExceptionInterface
@@ -233,6 +277,13 @@ class LetRecoApi extends AbstractApiClient
         return $this->call(
             'GET',
             sprintf('/kwp-user/api/v2/users/userByEmail/%s', $email),
+            [
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
+            ]
         );
     }
 
@@ -255,6 +306,11 @@ class LetRecoApi extends AbstractApiClient
                 'json' => [
                     'password' => $password,
                 ],
+                'headers' => [
+                    'X-OTC-Auth-Ident' => base64_encode($this->authIdent),
+                    'X-OTC-Auth-Password' => base64_encode($this->authPassword),
+                    'X-OTC-Auth-Domain' => base64_encode($this->authDomain),
+                ]
             ]
         );
     }

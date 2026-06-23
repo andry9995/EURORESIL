@@ -1,20 +1,59 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="UTF-8"><style>
-body{font-family:Arial,sans-serif;background:#F4F3EC;margin:0;padding:40px 20px}
-.card{background:#fff;border-radius:16px;max-width:480px;margin:0 auto;padding:36px;border:1px solid #E3E0D5}
-.logo{font-size:24px;font-weight:800;margin-bottom:20px}
-.code{font-size:38px;font-weight:800;letter-spacing:10px;color:#12182B;background:#E7EBFB;border-radius:12px;padding:16px 24px;text-align:center;margin:20px 0}
-p{color:#5C6072;font-size:15px;line-height:1.6}
-</style></head><body>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #F4F3EC;
+            margin: 0;
+            padding: 40px 20px
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 36px;
+            border: 1px solid #E3E0D5
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 20px
+        }
+
+        .code {
+            font-size: 38px;
+            font-weight: 800;
+            letter-spacing: 10px;
+            color: #12182B;
+            background: #E7EBFB;
+            border-radius: 12px;
+            padding: 16px 24px;
+            text-align: center;
+            margin: 20px 0
+        }
+
+        p {
+            color: #5C6072;
+            font-size: 15px;
+            line-height: 1.6
+        }
+    </style>
+</head>
+<body>
 <div class="card">
-  <div class="logo">EURO<span style="color:#2747DC">RESIL</span></div>
-  <p>Bonjour,</p>
-  <p>Voici votre code de verification EURORESIL :</p>
-  <div class="code">{{ code }}</div>
-  <p>Ce code est valable <strong>15 minutes</strong>. Ne le communiquez a personne.</p>
-  <p style="font-size:13px;color:#aaa;margin-top:24px;border-top:1px solid #eee;padding-top:16px">
-    Si vous n'avez pas demande ce code, ignorez cet email. Votre compte est en securite.<br><br>
-    L'equipe EURORESIL
-  </p>
+    <div class="logo">EURO<span style="color:#2747DC">RESIL</span></div>
+    <p>Bonjour,</p>
+    <p>Voici votre code de vérification EURORESIL :</p>
+    <div class="code">{{ code }}</div>
+    <p>Ce code est valable pendant <strong>15 minutes</strong>. Ne le communiquez à personne.</p>
+    <p style="font-size:13px;color:#aaa;margin-top:24px;border-top:1px solid #eee;padding-top:16px">
+        Si vous n’avez pas demandé ce code, ignorez cet e-mail. Votre compte est en sécurité.<br><br>
+        L’équipe EURORESIL </p>
 </div>
-</body></html>
+</body>
+</html>

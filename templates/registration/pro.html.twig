@@ -6,7 +6,7 @@
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px">
     <div class="auth-card" style="width:100%;max-width:460px;max-height:94vh;overflow-y:auto">
       <h3>Compte professionnel</h3>
-      <p class="desc">Ouvert a tous les professionnels qui envoient des recommandes.</p>
+      <p class="desc">Ouvert à tous les professionnels qui envoient des recommandés.</p>
 
       {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
@@ -76,7 +76,7 @@
         {% endfor %}
       {% endfor %}
 
-      <button class="btn btn-primary btn-block" type="submit">Creer mon compte</button>
+      <button class="btn btn-primary btn-block" type="submit">Créer mon compte</button>
 
       {{ form_end(form) }}
 
@@ -86,11 +86,11 @@
 
   <script>
     const regMap = {
-      courtier: ['N&#176; ORIAS *', '07 0XX XXX'],
+      courtier: ['N° ORIAS *', '07 0XX XXX'],
       avocat: ['Barreau de rattachement', 'Ex : Paris'],
-      syndic: ['Carte professionnelle G (CCI)', 'N&#176; carte'],
-      adb: ['Carte professionnelle G (CCI)', 'N&#176; carte'],
-      expert: ["N&#176; Ordre (OEC)", 'N&#176; OEC'],
+      syndic: ['Carte professionnelle G (CCI)', 'N° carte'],
+      adb: ['Carte professionnelle G (CCI)', 'N° carte'],
+      expert: ["N° Ordre (OEC)", 'N° OEC'],
       autre: ['Ref. professionnelle', '(optionnel)']
     };
 
