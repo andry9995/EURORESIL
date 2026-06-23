@@ -162,9 +162,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->raisonSociale;
     }
 
-    public function setRaisonSociale(?string $r): static
+    public function setRaisonSociale(?string $raisonSociale): static
     {
-        $this->raisonSociale = $r;
+        $this->raisonSociale = $raisonSociale;
         return $this;
     }
 
@@ -173,9 +173,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->registryType;
     }
 
-    public function setRegistryType(?string $t): static
+    public function setRegistryType(?string $registryType): static
     {
-        $this->registryType = $t;
+        $this->registryType = $registryType;
         return $this;
     }
 
@@ -184,9 +184,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->registryNumber;
     }
 
-    public function setRegistryNumber(?string $n): static
+    public function setRegistryNumber(?string $registryNumber): static
     {
-        $this->registryNumber = $n;
+        $this->registryNumber = $registryNumber;
         return $this;
     }
 
@@ -195,9 +195,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->siret;
     }
 
-    public function setSiret(?string $s): static
+    public function setSiret(?string $siret): static
     {
-        $this->siret = $s;
+        $this->siret = $siret;
         return $this;
     }
 
@@ -211,9 +211,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->emailVerifiedAt;
     }
 
-    public function setEmailVerifiedAt(?\DateTimeImmutable $d): static
+    public function setEmailVerifiedAt(?\DateTimeImmutable $emailVerifiedAt): static
     {
-        $this->emailVerifiedAt = $d;
+        $this->emailVerifiedAt = $emailVerifiedAt;
         return $this;
     }
 
@@ -222,9 +222,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->verificationCode;
     }
 
-    public function setVerificationCode(?string $c): static
+    public function setVerificationCode(?string $verificationCode): static
     {
-        $this->verificationCode = $c;
+        $this->verificationCode = $verificationCode;
         return $this;
     }
 
@@ -233,9 +233,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->verificationCodeExpiresAt;
     }
 
-    public function setVerificationCodeExpiresAt(?\DateTimeImmutable $d): static
+    public function setVerificationCodeExpiresAt(?\DateTimeImmutable $verificationCodeExpiredAt): static
     {
-        $this->verificationCodeExpiresAt = $d;
+        $this->verificationCodeExpiresAt = $verificationCodeExpiredAt;
         return $this;
     }
 
@@ -244,9 +244,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->credits;
     }
 
-    public function setCredits(int $c): static
+    public function setCredits(int $credits): static
     {
-        $this->credits = $c;
+        $this->credits = $credits;
         return $this;
     }
 

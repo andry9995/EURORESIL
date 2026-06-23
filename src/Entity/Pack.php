@@ -52,9 +52,9 @@ class Pack
         return $this->user;
     }
 
-    public function setUser(User $u): static
+    public function setUser(User $user): static
     {
-        $this->user = $u;
+        $this->user = $user;
         return $this;
     }
 
@@ -63,10 +63,10 @@ class Pack
         return $this->qtyPurchased;
     }
 
-    public function setQtyPurchased(int $q): static
+    public function setQtyPurchased(int $qtyPurchased): static
     {
-        $this->qtyPurchased = $q;
-        $this->qtyRemaining = $q;
+        $this->qtyPurchased = $qtyPurchased;
+        $this->qtyRemaining = $qtyPurchased;
         return $this;
     }
 
@@ -80,9 +80,9 @@ class Pack
         return $this->unitPrice;
     }
 
-    public function setUnitPrice(string $p): static
+    public function setUnitPrice(string $unitPrice): static
     {
-        $this->unitPrice = $p;
+        $this->unitPrice = $unitPrice;
         return $this;
     }
 
@@ -91,9 +91,9 @@ class Pack
         return $this->amountTtc;
     }
 
-    public function setAmountTtc(string $a): static
+    public function setAmountTtc(string $amountTtc): static
     {
-        $this->amountTtc = $a;
+        $this->amountTtc = $amountTtc;
         return $this;
     }
 

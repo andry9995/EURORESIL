@@ -32,9 +32,6 @@ class Invoice
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private string $amountTtc;
 
-    #[ORM\Column(nullable: true)]
-    private ?string $pdfPath = null;
-
     #[ORM\Column]
     private \DateTimeImmutable $issuedAt;
 
@@ -60,9 +57,9 @@ class Invoice
         return $this->user;
     }
 
-    public function setUser(User $u): static
+    public function setUser(User $user): static
     {
-        $this->user = $u;
+        $this->user = $user;
         return $this;
     }
 
@@ -71,9 +68,9 @@ class Invoice
         return $this->pack;
     }
 
-    public function setPack(?Pack $p): static
+    public function setPack(?Pack $pack): static
     {
-        $this->pack = $p;
+        $this->pack = $pack;
         return $this;
     }
 
@@ -82,9 +79,9 @@ class Invoice
         return $this->invoiceNumber;
     }
 
-    public function setInvoiceNumber(string $n): static
+    public function setInvoiceNumber(string $invoiceNumber): static
     {
-        $this->invoiceNumber = $n;
+        $this->invoiceNumber = $invoiceNumber;
         return $this;
     }
 
@@ -93,9 +90,9 @@ class Invoice
         return $this->amountHt;
     }
 
-    public function setAmountHt(string $a): static
+    public function setAmountHt(string $amountHt): static
     {
-        $this->amountHt = $a;
+        $this->amountHt = $amountHt;
         return $this;
     }
 
@@ -109,20 +106,9 @@ class Invoice
         return $this->amountTtc;
     }
 
-    public function setAmountTtc(string $a): static
+    public function setAmountTtc(string $amountTtc): static
     {
-        $this->amountTtc = $a;
-        return $this;
-    }
-
-    public function getPdfPath(): ?string
-    {
-        return $this->pdfPath;
-    }
-
-    public function setPdfPath(?string $p): static
-    {
-        $this->pdfPath = $p;
+        $this->amountTtc = $amountTtc;
         return $this;
     }
 
