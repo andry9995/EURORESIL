@@ -1,0 +1,20 @@
+<nav>
+    {% include 'partials/_logo.html.twig' %}
+    <div style="display:flex;align-items:center;gap:8px">
+        <div class="mode-toggle">
+            {% if app.user.profile == constant('App\\Enum\\Profile::PRO') %}
+                <a href="{{ path('app_dashboard') }}"
+                   class="btn-nav {% if app.request.pathinfo starts with '/dashboard' %}on{% endif %}">Tableau de
+                    bord</a>
+            {% endif %}
+            <a href="{{ path('app_cancellation_subscriber') }}"
+               class="btn-nav {% if app.request.pathinfo starts with '/cancellation' %}on{% endif %}">Résiliation</a>
+            <a href="{{ path('app_packs') }}"
+               class="btn-nav {% if app.request.pathinfo starts with '/packs' %}on{% endif %}">Mes packs</a>
+        </div>
+        <span style="font-size:13px;color:var(--ink-soft);font-weight:600;margin-left:6px">
+      <span style="color:var(--blue)">{{ app.user.credits }}</span> crédits
+    </span>
+        <a href="{{ path('app_logout') }}" class="btn-account">Se déconnecter</a>
+    </div>
+</nav>

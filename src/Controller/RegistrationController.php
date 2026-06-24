@@ -199,7 +199,7 @@ class RegistrationController extends AbstractController
                 $user->setVerificationCode(null);
                 $em->flush();
                 $request->getSession()->remove('reset_user_id');
-                $this->addFlash('success', 'Mot de passe reinitialise.');
+                $this->addFlash('success', 'Mot de passe réinitialisé.');
                 return $this->redirectToRoute('app_login');
             }
             $this->addFlash('error', 'Code incorrect ou expire.');

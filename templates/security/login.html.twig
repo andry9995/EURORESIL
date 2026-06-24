@@ -7,7 +7,7 @@
       <span style="font-size:26px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800">EURO<b style="color:var(--blue)">RESIL</b></span>
     </div>
     <h3>Connexion</h3>
-    <p class="desc">Accedez a votre espace EURORESIL.</p>
+    <p class="desc">Accédez à votre espace EURORESIL.</p>
     {% for type, messages in app.flashes %}
       {% for msg in messages %}
         <div class="flash flash-{{ type }}">
@@ -31,8 +31,8 @@
       <button class="btn btn-primary btn-block" style="letter-spacing:.04em" type="submit">VALIDER</button>
     </form>
     <div style="text-align:center;margin-top:20px;display:flex;flex-direction:column;gap:11px">
-      <a class="auth-link" href="{{ path('app_register_choice') }}">Creer mon compte</a>
-      <a class="auth-link" href="{{ path('app_forgot_password') }}">Mot de passe oublie</a>
+      <a class="auth-link" href="{{ path('app_register_choice') }}">Créer mon compte</a>
+      <a class="auth-link" href="{{ path('app_forgot_password') }}">Mot de passe oublié</a>
     </div>
   </div>
 </div>

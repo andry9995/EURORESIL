@@ -6,6 +6,7 @@ use App\Entity\Cancellation;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class CancellationVoter extends Voter
 {
@@ -38,12 +39,25 @@ class CancellationVoter extends Voter
          */
         $currentUser = $token->getUser();
 
-        return match ($attribute) {
-            self::CAN_VIEW_CANCELLATION => $this->canView($currentUser, $subject),
-            self::CAN_CANCELLATION => $this->canEdit($currentUser, $subject),
-            default => $currentUser->getCredits() > 0,
-        };
+        if(!$currentUser instanceof User) {
+            return false;
+        }
 
+        switch ($attribute) {
+            case self::CAN_VIEW_CANCELLATION:
+                if (!$this->canView($currentUser, $subject)) {
+                    throw new AccessDeniedException("Vous n'avez pas l'autorisation de voir cette annulation.");
+                }
+                return true;
+
+            case self::CAN_CANCELLATION:
+                if (!$this->canEdit($currentUser, $subject)) {
+                    throw new AccessDeniedException("Crédits insuffisants ou droits manquants pour effectuer une annulation.");
+                }
+                return true;
+        }
+
+        return false;
     }
 
     /**

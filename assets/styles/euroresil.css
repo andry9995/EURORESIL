@@ -2071,3 +2071,51 @@ tr.row:hover {
     padding: 3px 8px;
     border-radius: 6px
 }
+
+.btn-nav {
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    border: none;
+    background: none;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-decoration: none;
+    transition: .25s;
+    display: inline-block
+}
+
+.btn-nav.on, .btn-nav:hover {
+    background: var(--white);
+    color: var(--blue-deep);
+    box-shadow: var(--shadow-sm)
+}
+
+.flash {
+    padding: 12px 20px;
+    margin: 8px auto 0;
+    max-width: 1100px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px
+}
+
+.flash-success {
+    background: #DFF3E6;
+    color: #1c7a45;
+    border: 1px solid #b3dfc2
+}
+
+.flash-error {
+    background: #FDEAEA;
+    color: #9b1c1c;
+    border: 1px solid #f5c6c6
+}
+
+.flash-info {
+    background: var(--blue-soft);
+    color: var(--blue-deep);
+    border: 1px solid #cdd7f7
+}
