@@ -34,6 +34,13 @@ class AccessDeniedListener implements EventSubscriberInterface
             return;
         }
 
+        $request = $event->getRequest();
+        $currentRoute = $request->attributes->get('_route');
+
+        if ($currentRoute === 'app_home') {
+            return;
+        }
+
         $message = $exception->getMessage() ?? "Vous n'avez pas l'autorisation d'accéder à cette page.";
 
         $session = $this->requestStack->getSession();
