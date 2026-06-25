@@ -196,7 +196,9 @@ readonly class LetRecoService
                 ]);
 
                 if($response['status']) {
-                    return $this->letRecoApi->addUserToGroup($params['uid']);
+                    $this->letRecoApi->addUserToGroup($params['uid']);
+
+                    return $response;
                 }
             }
 
